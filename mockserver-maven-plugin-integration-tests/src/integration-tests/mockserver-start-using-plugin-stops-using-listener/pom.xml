@@ -11,8 +11,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -78,10 +78,6 @@
                             <value>org.mockserver.maven.StopMockServerTestListener</value>
                         </property>
                     </properties>
-                    <systemProperties>
-                        <mockserver.logLevel>WARN</mockserver.logLevel>
-                        <mockserver.nioEventLoopThreadCount>1</mockserver.nioEventLoopThreadCount>
-                    </systemProperties>
                 </configuration>
             </plugin>
             <!-- tests run after mock server stopped (to check it has been stopped) -->
@@ -95,10 +91,6 @@
                     <includes>
                         <include>**/*StopTest.java</include>
                     </includes>
-                    <systemProperties>
-                        <mockserver.logLevel>WARN</mockserver.logLevel>
-                        <mockserver.nioEventLoopThreadCount>1</mockserver.nioEventLoopThreadCount>
-                    </systemProperties>
                 </configuration>
                 <executions>
                     <execution>

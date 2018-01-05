@@ -11,8 +11,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -60,17 +60,13 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- allow debugging tests -->
-                    <forkCount>0</forkCount>
+                    <!-- <forkCount>0</forkCount> -->
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
                     <excludes>
                         <exclude>**/*StopTest.java</exclude>
                     </excludes>
-                    <systemProperties>
-                        <mockserver.logLevel>WARN</mockserver.logLevel>
-                        <mockserver.nioEventLoopThreadCount>1</mockserver.nioEventLoopThreadCount>
-                    </systemProperties>
                 </configuration>
             </plugin>
             <!-- tests run after mock server stopped (to check it has been stopped) -->
@@ -80,14 +76,10 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- allow debugging tests -->
-                    <forkCount>0</forkCount>
+                    <!-- <forkCount>0</forkCount> -->
                     <includes>
                         <include>**/*StopTest.java</include>
                     </includes>
-                    <systemProperties>
-                        <mockserver.logLevel>WARN</mockserver.logLevel>
-                        <mockserver.nioEventLoopThreadCount>1</mockserver.nioEventLoopThreadCount>
-                    </systemProperties>
                 </configuration>
                 <executions>
                     <execution>

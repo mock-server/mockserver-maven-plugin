@@ -1,11 +1,7 @@
 package org.mockserver;
 
 import org.junit.Test;
-import org.mockserver.client.proxy.ProxyClient;
 import org.mockserver.client.server.MockServerClient;
-
-import java.net.ConnectException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author jamesdbloom

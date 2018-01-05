@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -12,7 +12,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolverException;
 import org.mockserver.cli.Main;
 import org.mockserver.configuration.ConfigurationProperties;
 
@@ -27,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Run a forked instance of the MockServer
- *
+ * <p>
  * To run from command line:
- *
- *    mvn -Dmockserver.serverPort="1080" -Dmockserver.proxyPort="1090" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.3.0:runForked
+ * <p>
+ * mvn -Dmockserver.serverPort="1080" -Dmockserver.proxyPort="1090" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.3.0:runForked
  *
  * @author jamesdbloom
  */
@@ -78,8 +77,8 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
             }
             if (getLog().isInfoEnabled()) {
                 getLog().info("mockserver:runForked about to start MockServer on: "
-                                + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
-                                + (proxyPort != -1 ? " proxyPort " + proxyPort : "")
+                        + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
+                        + (proxyPort != -1 ? " proxyPort " + proxyPort : "")
                 );
             }
             List<String> arguments = new ArrayList<String>(Collections.singletonList(getJavaBin()));
@@ -147,17 +146,39 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
         return javaBinary;
     }
 
+//    private String resolvePathForDependencyJar(Dependency dependency) {
+//        String path = "";
+//        try {
+//            Artifact dependencyArtifact = repositorySystem.createArtifactWithClassifier(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getType(), dependency.getClassifier());
+//            artifactResolver.resolveArtifact(session.getProjectBuildingRequest(), dependencyArtifact);
+//            if (dependencyArtifact != null) {
+//                ArtifactRepository localRepository = session.getLocalRepository();
+//                path = localRepository.getBasedir() + "/" + localRepository.pathOf(dependencyArtifact);
+//            }
+//        } catch (ArtifactResolverException e) {
+//            getLog().warn("Exception while resolving file path for dependency " + dependency, e);
+//        }
+//        return path;
+//    }
+
     private String resolvePathForDependencyJar(Dependency dependency) {
         String path = "";
-        try {
-            Artifact dependencyArtifact = repositorySystem.createArtifactWithClassifier(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getType(), dependency.getClassifier());
-            artifactResolver.resolveArtifact(session.getProjectBuildingRequest(), dependencyArtifact);
-            if (dependencyArtifact != null) {
-                ArtifactRepository localRepository = session.getLocalRepository();
-                path = localRepository.getBasedir() + "/" + localRepository.pathOf(dependencyArtifact);
-            }
-        } catch (ArtifactResolverException e) {
-            getLog().warn("Exception while resolving file path for dependency " + dependency, e);
+        Artifact dependencyArtifact = repositorySystem.createArtifactWithClassifier(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getType(), dependency.getClassifier());
+
+        ArtifactResolutionRequest request = new ArtifactResolutionRequest();
+        request.setArtifact(dependencyArtifact);
+
+        request.setResolveRoot(true).setResolveTransitively(false);
+        if (session != null && session.getRequest() != null) {
+            request.setServers(session.getRequest().getServers());
+            request.setMirrors(session.getRequest().getMirrors());
+            request.setProxies(session.getRequest().getProxies());
+            request.setLocalRepository(session.getLocalRepository());
+            request.setRemoteRepositories(session.getRequest().getRemoteRepositories());
+        }
+        repositorySystem.resolve(request);
+        if (dependencyArtifact != null && dependencyArtifact.getFile() != null) {
+            path = dependencyArtifact.getFile().getAbsolutePath();
         }
         return path;
     }

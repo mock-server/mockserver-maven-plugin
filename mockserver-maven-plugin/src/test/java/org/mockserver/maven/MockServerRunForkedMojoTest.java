@@ -28,7 +28,8 @@ public class MockServerRunForkedMojoTest {
     private final String level = "LEVEL";
     private final String repositoryBaseDir = "repositoryBaseDir";
     private final String repositoryPathOfArtifact = "repositoryPathOfArtifact";
-    private final String jarWithDependenciesPath = repositoryBaseDir + "/" + repositoryPathOfArtifact;
+//    private final String jarWithDependenciesPath = repositoryBaseDir + "/" + repositoryPathOfArtifact;
+    private final String jarWithDependenciesPath = "";
     private String javaBinaryPath;
     @Mock
     private RepositorySystem mockRepositorySystem;
