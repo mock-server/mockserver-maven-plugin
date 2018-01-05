@@ -146,21 +146,6 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
         return javaBinary;
     }
 
-//    private String resolvePathForDependencyJar(Dependency dependency) {
-//        String path = "";
-//        try {
-//            Artifact dependencyArtifact = repositorySystem.createArtifactWithClassifier(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getType(), dependency.getClassifier());
-//            artifactResolver.resolveArtifact(session.getProjectBuildingRequest(), dependencyArtifact);
-//            if (dependencyArtifact != null) {
-//                ArtifactRepository localRepository = session.getLocalRepository();
-//                path = localRepository.getBasedir() + "/" + localRepository.pathOf(dependencyArtifact);
-//            }
-//        } catch (ArtifactResolverException e) {
-//            getLog().warn("Exception while resolving file path for dependency " + dependency, e);
-//        }
-//        return path;
-//    }
-
     private String resolvePathForDependencyJar(Dependency dependency) {
         String path = "";
         Artifact dependencyArtifact = repositorySystem.createArtifactWithClassifier(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), dependency.getType(), dependency.getClassifier());
