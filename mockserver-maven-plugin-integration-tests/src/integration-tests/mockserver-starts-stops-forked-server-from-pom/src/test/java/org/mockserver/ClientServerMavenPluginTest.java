@@ -4,27 +4,25 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockserver.client.server.MockServerClient;
-import org.mockserver.echo.unification.PortUnificationEchoServer;
-import org.mockserver.integration.server.AbstractClientServerIntegrationTest;
-import org.mockserver.socket.PortFactory;
+import org.mockserver.echo.http.EchoServer;
+import org.mockserver.integration.server.AbstractBasicClientServerIntegrationTest;
 
 /**
  * @author jamesdbloom
  */
-public class ClientServerMavenPluginTest extends AbstractClientServerIntegrationTest {
+public class ClientServerMavenPluginTest extends AbstractBasicClientServerIntegrationTest {
 
-    private final static int ECHO_SERVER_HTTP_PORT = PortFactory.findFreePort();
     private final static int SERVER_HTTP_PORT = 8092;
-    private static PortUnificationEchoServer echoServer;
+    private static EchoServer echoServer;
 
     @BeforeClass
     public static void createClient() throws Exception {
-        echoServer = new PortUnificationEchoServer(ECHO_SERVER_HTTP_PORT);
+        echoServer = new EchoServer(false);
         mockServerClient = new MockServerClient("localhost", SERVER_HTTP_PORT, servletContext);
     }
 
     @AfterClass
-    public static void stopServer() throws Exception {
+    public static void stopServer() {
         echoServer.stop();
     }
 
@@ -45,7 +43,7 @@ public class ClientServerMavenPluginTest extends AbstractClientServerIntegration
 
     @Override
     public int getTestServerPort() {
-        return ECHO_SERVER_HTTP_PORT;
+        return echoServer.getPort();
     }
 
 }

@@ -65,7 +65,7 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
         return ret.toString();
     }
 
-    public void execute() throws MojoExecutionException {
+    public void execute() {
         if (skip) {
             getLog().info("Skipping plugin execution");
         } else {

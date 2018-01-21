@@ -19,8 +19,10 @@ public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
     // used to simplify waiting logic
     private SettableFuture settableFuture = SettableFuture.create();
 
-    public void execute() throws MojoExecutionException {
-        ConfigurationProperties.overrideLogLevel(logLevel);
+    public void execute() {
+        if (logLevel != null) {
+            ConfigurationProperties.logLevel(logLevel);
+        }
         if (skip) {
             getLog().info("Skipping plugin execution");
         } else {

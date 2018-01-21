@@ -19,8 +19,10 @@ import java.util.Arrays;
 @Mojo(name = "stopForked", requiresProject = false, threadSafe = false)
 public class MockServerStopForkedMojo extends MockServerAbstractMojo {
 
-    public void execute() throws MojoExecutionException {
-        ConfigurationProperties.overrideLogLevel(logLevel);
+    public void execute() {
+        if (logLevel != null) {
+            ConfigurationProperties.logLevel(logLevel);
+        }
         if (skip) {
             getLog().info("Skipping plugin execution");
         } else {

@@ -31,7 +31,7 @@
                 <artifactId>mockserver-maven-plugin</artifactId>
                 <version>5.3.1-SNAPSHOT</version>
                 <configuration>
-                    <logLevel>WARN</logLevel>
+                    <logLevel>INFO</logLevel>
                     <serverPort>8092</serverPort>
                     <pipeLogToConsole>false</pipeLogToConsole>
                 </configuration>
@@ -55,7 +55,7 @@
                     <dependency>
                         <groupId>org.mock-server</groupId>
                         <artifactId>mockserver-integration-testing</artifactId>
-                        <version>@mockserver.version@</version>
+                        <version>5.3.1-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -66,7 +66,7 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- allow debugging tests -->
-                    <!-- <forkCount>0</forkCount> -->
+                    <forkCount>0</forkCount>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
@@ -82,7 +82,7 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- allow debugging tests -->
-                    <!-- <forkCount>0</forkCount> -->
+                    <forkCount>0</forkCount>
                     <includes>
                         <include>**/*StopTest.java</include>
                     </includes>

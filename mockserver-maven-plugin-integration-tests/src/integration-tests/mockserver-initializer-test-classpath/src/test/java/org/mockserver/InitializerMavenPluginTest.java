@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockserver.model.HttpStatusCode.OK_200;
@@ -71,17 +72,20 @@ public class InitializerMavenPluginTest {
     }
 
     protected HttpResponse makeRequest(HttpRequest httpRequest, Collection<String> headersToIgnore) {
-        boolean isSsl = httpRequest.isSecure() != null && httpRequest.isSecure();
-        int port = (isSsl ? SERVER_HTTPS_PORT : SERVER_HTTP_PORT);
-        HttpResponse httpResponse = httpClient.sendRequest(httpRequest, new InetSocketAddress("localhost", port));
-        List<Header> headers = new ArrayList<Header>();
-        for (Header header : httpResponse.getHeaderList()) {
-            if (!headersToIgnore.contains(header.getName().getValue().toLowerCase())) {
-                headers.add(header);
+        try {
+            HttpResponse httpResponse = httpClient.sendRequest(httpRequest, new InetSocketAddress("localhost", SERVER_HTTP_PORT))
+                    .get(30, TimeUnit.SECONDS);
+            List<Header> headers = new ArrayList<Header>();
+            for (Header header : httpResponse.getHeaderList()) {
+                if (!headersToIgnore.contains(header.getName().getValue().toLowerCase())) {
+                    headers.add(header);
+                }
             }
+            httpResponse.withHeaders(headers);
+            return httpResponse;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
-        httpResponse.withHeaders(headers);
-        return httpResponse;
     }
 
 }

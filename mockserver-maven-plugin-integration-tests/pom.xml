@@ -157,7 +157,7 @@
                         </property>
                     </properties>
                     <environmentVariables>
-                        <mockserver.logLevel>WARN</mockserver.logLevel>
+                        <mockserver.logLevel>INFO</mockserver.logLevel>
                         <mockserver.nioEventLoopThreadCount>1</mockserver.nioEventLoopThreadCount>
                     </environmentVariables>
                     <filterProperties>

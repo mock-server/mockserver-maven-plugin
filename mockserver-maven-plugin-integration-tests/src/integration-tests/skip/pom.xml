@@ -33,7 +33,7 @@
                 <version>@mockserver.version@</version>
                 <configuration>
                     <skip>true</skip>
-                    <logLevel>WARN</logLevel>
+                    <logLevel>INFO</logLevel>
                     <serverPort>8096</serverPort>
                     <proxyPort>9100</proxyPort>
                     <pipeLogToConsole>false</pipeLogToConsole>
