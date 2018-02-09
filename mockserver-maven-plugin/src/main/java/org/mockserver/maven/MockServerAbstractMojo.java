@@ -32,27 +32,41 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      * Holds reference to jetty across plugin execution
      */
     @VisibleForTesting
-    protected static InstanceHolder embeddedJettyHolder;
+    protected static InstanceHolder instanceHolder;
     /**
-     * The port to run MockServer on
+     * The HTTP, HTTPS, SOCKS and HTTP CONNECT port for the MockServer
+     * for both mocking and proxying requests. Port unification is used
+     * to support all protocols for proxying and mocking on the same port.
      */
     @Parameter(property = "mockserver.serverPort", defaultValue = "")
     protected String serverPort = "";
     /**
-     * The port to run the proxy on
+     * Optionally enables port forwarding mode. When specified all
+     * requests received will be forwarded to the specified port,
+     * unless they match an expectation.
      */
-    @Parameter(property = "mockserver.proxyPort", defaultValue = "-1")
-    protected Integer proxyPort = -1;
+    @Parameter(property = "mockserver.proxyRemotePort", defaultValue = "-1")
+    protected Integer proxyRemotePort = -1;
+    /**
+     * Specified the host to forward all proxy requests to when port
+     * forwarding mode has been enabled using the proxyRemotePort option.
+     * This setting is ignored unless proxyRemotePort has been specified.
+     * If no value is provided for proxyRemoteHost when proxyRemotePort
+     * has been specified, proxyRemoteHost will default to \"localhost\".
+     */
+    @Parameter(property = "mockserver.proxyRemoteHost", defaultValue = "")
+    protected String proxyRemoteHost = "";
     /**
      * Timeout to wait before stopping MockServer, to run MockServer indefinitely do not set a value
      */
     @Parameter(property = "mockserver.timeout")
     protected Integer timeout;
     /**
-     * Logging level
+     * Optionally specify log level as TRACE, DEBUG, INFO, WARN, ERROR or
+     * OFF. If not specified default is INFO.
      */
-    @Parameter(property = "mockserver.logLevel", defaultValue = "WARN")
-    protected String logLevel;
+    @Parameter(property = "mockserver.logLevel", defaultValue = "INFO")
+    protected String logLevel = "INFO";
     /**
      * Skip the plugin execution completely
      */
@@ -96,7 +110,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
 
     private Integer[] serverPorts;
 
-    protected Integer[] getServerPorts() {
+    Integer[] getServerPorts() {
         if (serverPorts == null && StringUtils.isNotEmpty(serverPort)) {
             List<Integer> ports = new ArrayList<Integer>();
             for (String port : Splitter.on(',').split(serverPort)) {
@@ -108,11 +122,11 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
     }
 
     protected InstanceHolder getEmbeddedJettyHolder() {
-        if (embeddedJettyHolder == null) {
+        if (instanceHolder == null) {
             // create on demand to avoid log creation for skipped plugins
-            embeddedJettyHolder = new InstanceHolder();
+            instanceHolder = new InstanceHolder();
         }
-        return embeddedJettyHolder;
+        return instanceHolder;
     }
 
     protected ExpectationInitializer createInitializer() {

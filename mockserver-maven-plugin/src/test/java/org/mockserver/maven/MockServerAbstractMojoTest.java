@@ -30,7 +30,7 @@ public class MockServerAbstractMojoTest {
             }
         };
         initMocks(this);
-        MockServerAbstractMojo.embeddedJettyHolder = mockEmbeddedJettyHolder;
+        MockServerAbstractMojo.instanceHolder = mockEmbeddedJettyHolder;
     }
 
     @Test

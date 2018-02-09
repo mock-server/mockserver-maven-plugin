@@ -5,18 +5,19 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.echo.http.EchoServer;
-import org.mockserver.integration.server.AbstractBasicMockingIntegrationTest;
+import org.mockserver.integration.proxy.AbstractClientProxyIntegrationTest;
 
 /**
  * @author jamesdbloom
  */
-public class ClientServerMavenPluginTest extends AbstractBasicMockingIntegrationTest {
+public class ClientProxyMavenPluginTest extends AbstractClientProxyIntegrationTest {
 
-    private final static int SERVER_HTTP_PORT = 1094;
+    private final static int SERVER_HTTP_PORT = 3086;
     private static EchoServer echoServer;
+    private static MockServerClient mockServerClient;
 
     @BeforeClass
-    public static void createClient() throws Exception {
+    public static void startServer() {
         echoServer = new EchoServer(false);
         mockServerClient = new MockServerClient("localhost", SERVER_HTTP_PORT, servletContext);
     }
@@ -29,17 +30,22 @@ public class ClientServerMavenPluginTest extends AbstractBasicMockingIntegration
     }
 
     @Before
-    public void clearServer() {
+    public void resetProxy() {
         mockServerClient.reset();
     }
 
     @Override
-    public int getServerPort() {
+    public int getProxyPort() {
         return SERVER_HTTP_PORT;
     }
 
     @Override
-    public int getEchoServerPort() {
+    public MockServerClient getMockServerClient() {
+        return mockServerClient;
+    }
+
+    @Override
+    public int getServerPort() {
         return echoServer.getPort();
     }
 

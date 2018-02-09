@@ -1,6 +1,5 @@
 package org.mockserver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.mockserver.configuration.ConfigurationProperties;
 
@@ -29,19 +28,18 @@ public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
             if (getLog().isInfoEnabled()) {
                 getLog().info("mockserver:runAndWait about to start MockServer on: "
                         + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
-                        + (proxyPort != -1 ? " proxyPort " + proxyPort : "")
                 );
             }
             try {
                 if (timeout != null && timeout > 0) {
-                    getEmbeddedJettyHolder().start(getServerPorts(), proxyPort, createInitializer());
+                    getEmbeddedJettyHolder().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
                     try {
                         settableFuture.get(timeout, TimeUnit.SECONDS);
                     } catch (TimeoutException te) {
                         // do nothing this is an expected exception when the timeout expires
                     }
                 } else {
-                    getEmbeddedJettyHolder().start(getServerPorts(), proxyPort, createInitializer());
+                    getEmbeddedJettyHolder().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
                     settableFuture.get();
                 }
             } catch (Exception e) {

@@ -22,7 +22,6 @@ import static org.mockserver.model.HttpStatusCode.OK_200;
 public class InitializerMavenPluginTest {
 
     private final static int SERVER_HTTP_PORT = 1082;
-    private final static int SERVER_HTTPS_PORT = 1083;
     protected List<String> headersToIgnore = Arrays.asList(
             "server",
             "expires",

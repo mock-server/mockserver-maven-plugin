@@ -1,7 +1,7 @@
 package org.mockserver;
 
 import org.junit.Test;
-import org.mockserver.client.server.MockServerClient;
+import org.mockserver.client.MockServerClient;
 
 /**
  * @author jamesdbloom

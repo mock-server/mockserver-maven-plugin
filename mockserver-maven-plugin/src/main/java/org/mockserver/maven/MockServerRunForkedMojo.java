@@ -2,6 +2,7 @@ package org.mockserver.maven;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
@@ -13,6 +14,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
 import org.mockserver.cli.Main;
+import org.mockserver.client.MockServerClient;
 import org.mockserver.configuration.ConfigurationProperties;
 
 import java.io.File;
@@ -24,12 +26,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.mockserver.maven.InstanceHolder.runInitializationClass;
+
 /**
  * Run a forked instance of the MockServer
  * <p>
  * To run from command line:
  * <p>
- * mvn -Dmockserver.serverPort="1080" -Dmockserver.proxyPort="1090" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.3.0:runForked
+ * mvn -Dmockserver.serverPort="1080" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.3.0:runForked
  *
  * @author jamesdbloom
  */
@@ -37,23 +41,13 @@ import java.util.concurrent.TimeUnit;
 public class MockServerRunForkedMojo extends MockServerAbstractMojo {
 
     /**
-     * Get a list of artifacts used by this plugin
-     */
-    @Parameter(defaultValue = "${plugin.artifacts}", required = true, readonly = true)
-    protected List<Artifact> pluginArtifacts;
-    /**
      * Used to look up Artifacts in the remote repository.
      */
     @Component
     protected RepositorySystem repositorySystem;
-    /**
-     * Used to look up Artifacts in the remote repository.
-     */
-    @Component
-    protected ArtifactResolver artifactResolver;
     private ProcessBuildFactory processBuildFactory = new ProcessBuildFactory();
 
-    public static String fileSeparators(String path) {
+    private static String fileSeparators(String path) {
         StringBuilder ret = new StringBuilder();
         for (char c : path.toCharArray()) {
             if ((c == '/') || (c == '\\')) {
@@ -69,7 +63,7 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
         if (skip) {
             getLog().info("Skipping plugin execution");
         } else {
-            getEmbeddedJettyHolder().stop(getServerPorts(), proxyPort, true);
+            getEmbeddedJettyHolder().stop(getServerPorts(), true);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
@@ -78,13 +72,11 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
             if (getLog().isInfoEnabled()) {
                 getLog().info("mockserver:runForked about to start MockServer on: "
                         + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
-                        + (proxyPort != -1 ? " proxyPort " + proxyPort : "")
                 );
             }
-            List<String> arguments = new ArrayList<String>(Collections.singletonList(getJavaBin()));
+            List<String> arguments = new ArrayList<>(Collections.singletonList(getJavaBin()));
 //            arguments.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5010");
             arguments.add("-Dfile.encoding=UTF-8");
-            arguments.add("-Dmockserver.logLevel=" + logLevel);
             arguments.add("-cp");
             StringBuilder classPath = new StringBuilder(resolvePathForJarWithDependencies());
             if (dependencies != null && !dependencies.isEmpty()) {
@@ -100,32 +92,37 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
                 arguments.add("" + Joiner.on(",").join(getServerPorts()));
                 ConfigurationProperties.mockServerPort(getServerPorts());
             }
-            if (proxyPort != -1) {
-                arguments.add("-proxyPort");
-                arguments.add("" + proxyPort);
-                ConfigurationProperties.proxyPort(proxyPort);
+            if (proxyRemotePort != -1) {
+                arguments.add("-proxyRemotePort");
+                arguments.add("" + proxyRemotePort);
+            }
+            if (!Strings.isNullOrEmpty(proxyRemoteHost)) {
+                arguments.add("-proxyRemoteHost");
+                arguments.add("" + proxyRemoteHost);
+            }
+            if (!Strings.isNullOrEmpty(logLevel)) {
+                arguments.add("-logLevel");
+                arguments.add("" + logLevel);
             }
             getLog().info(" ");
-            String message = "Running: " + Joiner.on(" ").join(arguments);
+            String message = Joiner.on(" ").join(arguments);
             getLog().info(StringUtils.rightPad("", message.length(), "-"));
             getLog().info(message);
             getLog().info(StringUtils.rightPad("", message.length(), "-"));
             getLog().info(" ");
             ProcessBuilder processBuilder = processBuildFactory.create(arguments);
             if (pipeLogToConsole) {
-                processBuilder.redirectErrorStream(true);
+                processBuilder.inheritIO();
             }
             try {
                 processBuilder.start();
             } catch (IOException e) {
                 getLog().error("Exception while starting MockServer", e);
             }
-            try {
-                TimeUnit.SECONDS.sleep((timeout == null ? 2 : timeout));
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Exception while waiting for mock server JVM to start", e);
+            if (getServerPorts() != null && getServerPorts().length > 0) {
+                new MockServerClient("localhost", getServerPorts()[0]).isRunning();
             }
-            InstanceHolder.runInitializationClass(getServerPorts(), createInitializer());
+            runInitializationClass(getServerPorts(), createInitializer());
         }
 
     }

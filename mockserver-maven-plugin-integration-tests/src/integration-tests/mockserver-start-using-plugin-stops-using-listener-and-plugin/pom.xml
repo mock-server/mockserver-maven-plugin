@@ -38,7 +38,7 @@
                 <version>@mockserver.version@</version>
                 <configuration>
                     <logLevel>INFO</logLevel>
-                    <serverPort>8090</serverPort>
+                    <serverPort>1090</serverPort>
                     <pipeLogToConsole>false</pipeLogToConsole>
                 </configuration>
                 <executions>

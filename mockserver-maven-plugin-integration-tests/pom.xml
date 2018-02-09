@@ -170,7 +170,7 @@
                     <!--<mavenOpts>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</mavenOpts>-->
                     <pomIncludes>
                         <pomInclude>**/pom.xml</pomInclude>
-                        <!--<pomInclude>mockserver-starts-stops-forked-server-from-pom/pom.xml</pomInclude>-->
+                        <!--<pomInclude>mockserver-run-stop-forked-from-pom/pom.xml</pomInclude>-->
                     </pomIncludes>
                     <goals>
                         <goal>test</goal>

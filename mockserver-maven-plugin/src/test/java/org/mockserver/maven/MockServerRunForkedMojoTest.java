@@ -25,18 +25,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class MockServerRunForkedMojoTest {
 
-    private final String level = "LEVEL";
     private final String jarWithDependenciesPath = "";
     private String javaBinaryPath;
     @Mock
     private RepositorySystem mockRepositorySystem;
-    @Mock
-    private MavenSession mockSession;
-    @Mock
-    private ArtifactResolver mockArtifactResolver;
-    @Mock
-    private ArtifactRepository mockArtifactRepository;
-
     @Mock
     private ProcessBuildFactory mockProcessBuildFactory;
     @InjectMocks
@@ -54,14 +46,13 @@ public class MockServerRunForkedMojoTest {
         initMocks(this);
 
         when(mockRepositorySystem.createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "jar-with-dependencies")).thenReturn(mockArtifact);
-        mockServerRunForkedMojo.logLevel = level;
     }
 
     @Test
-    public void shouldRunMockServerAndProxyForkedBothPortsSpecified() throws MojoExecutionException, ExecutionException, InterruptedException {
+    public void shouldRunMockServerForkedLocalPortSpecified() throws MojoExecutionException, ExecutionException, InterruptedException {
         // given
         mockServerRunForkedMojo.serverPort = "1,2";
-        mockServerRunForkedMojo.proxyPort = 3;
+        mockServerRunForkedMojo.logLevel = "LEVEL";
         mockServerRunForkedMojo.pipeLogToConsole = true;
         when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
 
@@ -74,17 +65,21 @@ public class MockServerRunForkedMojoTest {
         verify(mockProcessBuildFactory).create(Arrays.asList(
                 javaBinaryPath,
                 "-Dfile.encoding=UTF-8",
-                "-Dmockserver.logLevel=" + level,
-                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main", "-serverPort", "1,2", "-proxyPort", "3"
+                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main",
+                "-serverPort", "1,2",
+                "-logLevel", "LEVEL"
         ));
-        assertEquals(true, processBuilder.redirectErrorStream());
+        assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectError());
+        assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectOutput());
     }
 
     @Test
-    public void shouldRunMockServerAndProxyForkedOnlyPort() throws MojoExecutionException, ExecutionException, InterruptedException {
+    public void shouldRunMockServerForkedPortForwarding() throws MojoExecutionException, ExecutionException, InterruptedException {
         // given
         mockServerRunForkedMojo.serverPort = "1,2";
-        mockServerRunForkedMojo.proxyPort = 3;
+        mockServerRunForkedMojo.proxyRemotePort = 3;
+        mockServerRunForkedMojo.proxyRemoteHost = "remoteHost";
+        mockServerRunForkedMojo.logLevel = "LEVEL";
         mockServerRunForkedMojo.pipeLogToConsole = true;
         when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
 
@@ -97,14 +92,18 @@ public class MockServerRunForkedMojoTest {
         verify(mockProcessBuildFactory).create(Arrays.asList(
                 javaBinaryPath,
                 "-Dfile.encoding=UTF-8",
-                "-Dmockserver.logLevel=" + level,
-                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main", "-serverPort", "1,2", "-proxyPort", "3"
+                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main",
+                "-serverPort", "1,2",
+                "-proxyRemotePort", "3",
+                "-proxyRemoteHost", "remoteHost",
+                "-logLevel", "LEVEL"
         ));
-        assertEquals(true, processBuilder.redirectErrorStream());
+        assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectError());
+        assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectOutput());
     }
 
     @Test
-    public void shouldRunMockServerOnlyForkedBothPortsSpecified() throws MojoExecutionException, ExecutionException, InterruptedException {
+    public void shouldRunMockServerWithInitializer() throws MojoExecutionException, ExecutionException, InterruptedException {
         // given
         ExampleInitializationClass.mockServerClient = null;
         mockServerRunForkedMojo.serverPort = "1,2";
@@ -123,86 +122,13 @@ public class MockServerRunForkedMojoTest {
         verify(mockProcessBuildFactory).create(Arrays.asList(
                 javaBinaryPath,
                 "-Dfile.encoding=UTF-8",
-                "-Dmockserver.logLevel=" + level,
-                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main", "-serverPort", "1,2"
+                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main",
+                "-serverPort", "1,2",
+                "-logLevel", "INFO"
         ));
-        assertEquals(true, processBuilder.redirectErrorStream());
+        assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectError());
+        assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectOutput());
         assertNotNull(ExampleInitializationClass.mockServerClient);
-    }
-
-    @Test
-    public void shouldRunMockServerOnlyForkedOnlyPort() throws MojoExecutionException, ExecutionException, InterruptedException {
-        // given
-        ExampleInitializationClass.mockServerClient = null;
-        mockServerRunForkedMojo.serverPort = "1,2";
-        mockServerRunForkedMojo.pipeLogToConsole = true;
-        mockServerRunForkedMojo.initializationClass = "org.mockserver.maven.ExampleInitializationClass";
-        String classLocation = "org/mockserver/maven/ExampleInitializationClass.class";
-        mockServerRunForkedMojo.compileClasspath = Collections.singletonList(ExampleInitializationClass.class.getClassLoader().getResource(classLocation).getFile().replaceAll(classLocation, ""));
-        mockServerRunForkedMojo.testClasspath = Collections.emptyList();
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
-
-
-        // when
-        mockServerRunForkedMojo.execute();
-
-        // then
-        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "jar-with-dependencies");
-        verify(mockProcessBuildFactory).create(Arrays.asList(
-                javaBinaryPath,
-                "-Dfile.encoding=UTF-8",
-                "-Dmockserver.logLevel=" + level,
-                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main", "-serverPort", "1,2"
-        ));
-        assertEquals(true, processBuilder.redirectErrorStream());
-        assertNotNull(ExampleInitializationClass.mockServerClient);
-    }
-
-    @Test
-    public void shouldRunProxyOnlyForkedBothPortsSpecified() throws MojoExecutionException, ExecutionException, InterruptedException {
-        // given
-        ExampleInitializationClass.mockServerClient = null;
-        mockServerRunForkedMojo.proxyPort = 1;
-        mockServerRunForkedMojo.pipeLogToConsole = true;
-        mockServerRunForkedMojo.initializationClass = "org.mockserver.maven.ExampleInitializationClass";
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
-
-
-        // when
-        mockServerRunForkedMojo.execute();
-
-        // then
-        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "jar-with-dependencies");
-        verify(mockProcessBuildFactory).create(Arrays.asList(
-                javaBinaryPath,
-                "-Dfile.encoding=UTF-8",
-                "-Dmockserver.logLevel=" + level,
-                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main", "-proxyPort", "1"
-        ));
-        assertEquals(true, processBuilder.redirectErrorStream());
-        assertNull(ExampleInitializationClass.mockServerClient);
-    }
-
-    @Test
-    public void shouldRunProxyOnlyForkedOnlyPort() throws MojoExecutionException, ExecutionException, InterruptedException {
-        // given
-        mockServerRunForkedMojo.proxyPort = 1;
-        mockServerRunForkedMojo.pipeLogToConsole = true;
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
-
-
-        // when
-        mockServerRunForkedMojo.execute();
-
-        // then
-        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "jar-with-dependencies");
-        verify(mockProcessBuildFactory).create(Arrays.asList(
-                javaBinaryPath,
-                "-Dfile.encoding=UTF-8",
-                "-Dmockserver.logLevel=" + level,
-                "-cp", jarWithDependenciesPath, "org.mockserver.cli.Main", "-proxyPort", "1"
-        ));
-        assertEquals(true, processBuilder.redirectErrorStream());
     }
 
     @Test

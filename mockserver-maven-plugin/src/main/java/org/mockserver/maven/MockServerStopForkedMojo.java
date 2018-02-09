@@ -12,7 +12,7 @@ import java.util.Arrays;
  *
  * To run from command line:
  *
- *    mvn -Dmockserver.serverPort="1080" -Dmockserver.proxyPort="1090" org.mock-server:mockserver-maven-plugin:5.3.0:stopForked
+ *    mvn -Dmockserver.serverPort="1080" org.mock-server:mockserver-maven-plugin:5.3.0:stopForked
  *
  * @author jamesdbloom
  */
@@ -26,12 +26,9 @@ public class MockServerStopForkedMojo extends MockServerAbstractMojo {
         if (skip) {
             getLog().info("Skipping plugin execution");
         } else {
-            getEmbeddedJettyHolder().stop(getServerPorts(), proxyPort, false);
+            getEmbeddedJettyHolder().stop(getServerPorts(), false);
             if (getServerPorts() != null) {
                 getLog().info("Stopped MockServer running on port [" + Arrays.toString(getServerPorts()) + "]");
-            }
-            if (proxyPort != -1) {
-                getLog().info("Stopped the proxy running on port [" + proxyPort + "]");
             }
         }
     }

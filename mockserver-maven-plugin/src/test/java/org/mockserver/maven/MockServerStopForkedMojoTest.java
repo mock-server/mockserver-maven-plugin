@@ -1,6 +1,5 @@
 package org.mockserver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,31 +14,30 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class MockServerStopForkedMojoTest {
 
     @Mock
-    private InstanceHolder mockEmbeddedJettyHolder;
+    private InstanceHolder mockInstanceHolder;
     @InjectMocks
     private MockServerStopForkedMojo mockServerStopForkedMojo;
 
     @Before
     public void setupMocks() {
         initMocks(this);
-        MockServerAbstractMojo.embeddedJettyHolder = mockEmbeddedJettyHolder;
+        MockServerAbstractMojo.instanceHolder = mockInstanceHolder;
     }
 
     @Test
-    public void shouldStopMockServerAndProxySuccessfully() throws MojoExecutionException {
+    public void shouldStopMockServerAndProxySuccessfully() {
         // given
         mockServerStopForkedMojo.serverPort = "1,2";
-        mockServerStopForkedMojo.proxyPort = 2;
 
         // when
         mockServerStopForkedMojo.execute();
 
         // then
-        verify(mockEmbeddedJettyHolder).stop(new Integer[]{1,2}, 2, false);
+        verify(mockInstanceHolder).stop(new Integer[]{1,2}, false);
     }
 
     @Test
-    public void shouldSkipStoppingMockServer() throws MojoExecutionException {
+    public void shouldSkipStoppingMockServer() {
         // given
         mockServerStopForkedMojo.skip = true;
 
@@ -47,6 +45,6 @@ public class MockServerStopForkedMojoTest {
         mockServerStopForkedMojo.execute();
 
         // then
-        verifyNoMoreInteractions(mockEmbeddedJettyHolder);
+        verifyNoMoreInteractions(mockInstanceHolder);
     }
 }

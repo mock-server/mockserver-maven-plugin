@@ -34,8 +34,7 @@
                 <configuration>
                     <skip>true</skip>
                     <logLevel>INFO</logLevel>
-                    <serverPort>8096</serverPort>
-                    <proxyPort>9100</proxyPort>
+                    <serverPort>1096</serverPort>
                     <pipeLogToConsole>false</pipeLogToConsole>
                 </configuration>
                 <executions>

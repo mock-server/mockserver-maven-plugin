@@ -32,7 +32,7 @@
                 <version>@mockserver.version@</version>
                 <configuration>
                     <logLevel>INFO</logLevel>
-                    <serverPort>8094</serverPort>
+                    <serverPort>1094</serverPort>
                     <pipeLogToConsole>false</pipeLogToConsole>
                 </configuration>
                 <executions>

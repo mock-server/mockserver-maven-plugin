@@ -1,265 +1,146 @@
 package org.mockserver.maven;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockserver.client.proxy.ProxyClient;
-import org.mockserver.client.server.MockServerClient;
-import org.mockserver.mockserver.MockServer;
-import org.mockserver.mockserver.MockServerBuilder;
-import org.mockserver.proxy.Proxy;
-import org.mockserver.proxy.ProxyBuilder;
+import org.junit.rules.ExpectedException;
+import org.mockserver.cli.Main;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.client.netty.NettyHttpClient;
+import org.mockserver.configuration.ConfigurationProperties;
+import org.mockserver.echo.http.EchoServer;
+import org.mockserver.model.HttpResponse;
+import org.mockserver.socket.PortFactory;
+import org.slf4j.event.Level;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+
+import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.Is.isA;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 /**
  * @author jamesdbloom
  */
 public class InstanceHolderTest {
 
-    @Mock
-    private ProxyBuilder mockProxyBuilder;
-    @Mock
-    private MockServerBuilder mockMockServerBuilder;
-
-    @Mock
-    private Proxy mockProxy;
-    @Mock
-    private MockServer mockMockServer;
-
-    @Mock
-    private MockServerClient mockMockServerClient;
-    @Mock
-    private ProxyClient mockProxyClient;
-
-    @InjectMocks
-    private InstanceHolder instanceHolder;
-
-    @Before
-    public void setupMock() {
-        instanceHolder = new InstanceHolder();
-
-        initMocks(this);
-
-        when(mockMockServerBuilder.withHTTPPort(anyInt(), anyInt())).thenReturn(mockMockServerBuilder);
-        when(mockProxyBuilder.withLocalPort(anyInt())).thenReturn(mockProxyBuilder);
-
-        when(mockProxy.isRunning()).thenReturn(false);
-        when(mockMockServer.isRunning()).thenReturn(false);
-    }
-
-    @After
-    public void shutdownProxyAndMockServer() {
-        instanceHolder.stop();
-        InstanceHolder.proxyClients.clear();
-        InstanceHolder.mockServerClients.clear();
-    }
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void shouldStartServerAndProxyOnBothPorts() {
-        // when
-        instanceHolder.start(new Integer[]{1,2}, 3, null);
-
-        // then
-        verify(mockMockServerBuilder).withHTTPPort(1,2);
-        verify(mockProxyBuilder).withLocalPort(3);
-    }
-
-    @Test
-    public void shouldStartOnlyServerOnBothPorts() {
-        // when
-        instanceHolder.start(new Integer[]{1,2}, -1, null);
-
-        // then
-        verify(mockMockServerBuilder).withHTTPPort(1,2);
-        verifyNoMoreInteractions(mockProxyBuilder);
-    }
-
-    @Test
-    public void shouldStartOnlyServerOnHttpPort() {
-        // when
-        ExampleInitializationClass.mockServerClient = null;
-        instanceHolder.start(new Integer[]{1,2}, -1, new ExampleInitializationClass());
-
-        // then
-        verify(mockMockServerBuilder).withHTTPPort(1,2);
-        verifyNoMoreInteractions(mockProxyBuilder);
-        assertNotNull(ExampleInitializationClass.mockServerClient);
-    }
-
-    @Test
-    public void shouldStartOnlyProxyOnBothPorts() {
-        // when
-        ExampleInitializationClass.mockServerClient = null;
-        instanceHolder.start(new Integer[0], 3, new ExampleInitializationClass());
-
-        // then
-        verifyNoMoreInteractions(mockMockServerBuilder);
-        verify(mockProxyBuilder).withLocalPort(3);
-        assertNull(ExampleInitializationClass.mockServerClient);
-    }
-
-    @Test
-    public void shouldRunInitializationClass() {
+    public void shouldStartMockServer() {
         // given
-        ExampleInitializationClass.mockServerClient = null;
+        final int freePort = PortFactory.findFreePort();
+        MockServerClient mockServerClient = new MockServerClient("127.0.0.1", freePort);
+        Level originalLogLevel = ConfigurationProperties.logLevel();
 
-        // when
-        instanceHolder.start(new Integer[]{1,2}, -1, new ExampleInitializationClass());
+        try {
+            // when
+            new InstanceHolder().start(
+                    new Integer[]{freePort},
+                    -1,
+                    null,
+                    "DEBUG",
+                    null
+            );
 
-        // then
-        assertNotNull(ExampleInitializationClass.mockServerClient);
+            // then
+            assertThat(mockServerClient.isRunning(), is(true));
+            assertThat(ConfigurationProperties.logLevel().toString(), is("DEBUG"));
+        } finally {
+            ConfigurationProperties.logLevel(originalLogLevel.toString());
+            mockServerClient.stop();
+        }
     }
 
     @Test
-    public void shouldNotStartServerOrProxy() {
-        // when
-        ExampleInitializationClass.mockServerClient = null;
-        instanceHolder.start(new Integer[0], -1, new ExampleInitializationClass());
-
-        // then
-        verifyNoMoreInteractions(mockMockServerBuilder);
-        verifyNoMoreInteractions(mockProxyBuilder);
-        assertNull(ExampleInitializationClass.mockServerClient);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionIfServerRunning() {
+    public void shouldStartMockServerWithRemotePortAndHost() {
         // given
-        when(mockMockServer.isRunning()).thenReturn(true);
+        final int freePort = PortFactory.findFreePort();
+        MockServerClient mockServerClient = new MockServerClient("127.0.0.1", freePort);
+        try {
+            EchoServer echoServer = new EchoServer(false);
+            echoServer.withNextResponse(response("port_forwarded_response"));
 
-        // when
-        instanceHolder.start(new Integer[]{1,2}, 3, null);
-    }
+            // when
+            new InstanceHolder().start(
+                    new Integer[]{freePort},
+                    echoServer.getPort(),
+                    "127.0.0.1",
+                    "DEBUG",
+                    null
+            );
+            final HttpResponse response = new NettyHttpClient()
+                    .sendRequest(
+                            request()
+                                    .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
+                            10,
+                            TimeUnit.SECONDS
+                    );
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionIfProxyRunning() {
-        // given
-        when(mockProxy.isRunning()).thenReturn(true);
-
-        // when
-        instanceHolder.start(new Integer[]{1,2}, 3, null);
+            // then
+            assertThat(mockServerClient.isRunning(), is(true));
+            assertThat(response.getBodyAsString(), is("port_forwarded_response"));
+        } finally {
+            mockServerClient.stop();
+        }
     }
 
     @Test
-    public void shouldStopMockServer() {
+    public void shouldStartMockServerWithRemotePort() {
         // given
-        when(mockMockServer.isRunning()).thenReturn(true);
-        when(mockProxy.isRunning()).thenReturn(true);
+        final int freePort = PortFactory.findFreePort();
+        MockServerClient mockServerClient = new MockServerClient("127.0.0.1", freePort);
+        try {
+            EchoServer echoServer = new EchoServer(false);
+            echoServer.withNextResponse(response("port_forwarded_response"));
 
-        // when
-        instanceHolder.stop();
+            // when
+            new InstanceHolder().start(
+                    new Integer[]{freePort},
+                    echoServer.getPort(),
+                    "",
+                    "DEBUG",
+                    null
+            );
+            final HttpResponse response = new NettyHttpClient()
+                    .sendRequest(
+                            request()
+                                    .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
+                            10,
+                            TimeUnit.SECONDS
+                    );
 
-        // then
-        verify(mockMockServer).stop();
-        verify(mockProxy).stop();
+            // then
+            assertThat(mockServerClient.isRunning(), is(true));
+            assertThat(response.getBodyAsString(), is("port_forwarded_response"));
+        } finally {
+            mockServerClient.stop();
+        }
     }
 
     @Test
-    public void shouldStopMockServerAndProxyRemotely() {
+    public void shouldPrintOutUsageForInvalidLogLevel() throws UnsupportedEncodingException {
         // given
-        InstanceHolder.mockServerClients.put(1, mockMockServerClient);
-        InstanceHolder.proxyClients.put(2, mockProxyClient);
-
-        // when
-        instanceHolder.stop(new Integer[]{1,2}, 2, false);
+        final int freePort = PortFactory.findFreePort();
 
         // then
-        verify(mockMockServerClient).stop(false);
-        verify(mockProxyClient).stop(false);
-
-        // and - no new clients added
-        assertThat("mockServerClients.size", InstanceHolder.mockServerClients.size(), is(1));
-        assertThat("proxyClients.size", InstanceHolder.proxyClients.size(), is(1));
-    }
-
-    @Test
-    public void shouldStopMockServerAndProxyRemotelyAndIgnoreErrors() {
-        // given
-        InstanceHolder.mockServerClients.put(1, mockMockServerClient);
-        InstanceHolder.proxyClients.put(2, mockProxyClient);
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage(containsString("log level \"WRONG\" is not legal it must be one of \"TRACE\", \"DEBUG\", \"INFO\", \"WARN\", \"ERROR\", \"OFF\""));
 
         // when
-        instanceHolder.stop(new Integer[]{1,2}, 2, true);
-
-        // then
-        verify(mockMockServerClient).stop(true);
-        verify(mockProxyClient).stop(true);
-
-        // and - no new clients added
-        assertThat("mockServerClients.size", InstanceHolder.mockServerClients.size(), is(1));
-        assertThat("proxyClients.size", InstanceHolder.proxyClients.size(), is(1));
-    }
-
-    @Test
-    public void shouldStopMockServerOnlyRemotely() {
-        // given
-        InstanceHolder.mockServerClients.put(1, mockMockServerClient);
-        InstanceHolder.proxyClients.put(2, mockProxyClient);
-
-        // when
-        instanceHolder.stop(new Integer[]{1,2}, -1, false);
-
-        // then
-        verify(mockMockServerClient).stop(false);
-        verify(mockProxyClient, times(0)).stop(anyBoolean());
-
-        // and - no new clients added
-        assertThat("mockServerClients.size", InstanceHolder.mockServerClients.size(), is(1));
-        assertThat("proxyClients.size", InstanceHolder.proxyClients.size(), is(1));
-    }
-
-    @Test
-    public void shouldStopProxyOnlyRemotely() {
-        // given
-        InstanceHolder.mockServerClients.put(1, mockMockServerClient);
-        InstanceHolder.proxyClients.put(2, mockProxyClient);
-
-        // when
-        instanceHolder.stop(new Integer[0], 2, false);
-
-        // then
-        verify(mockMockServerClient, times(0)).stop(anyBoolean());
-        verify(mockProxyClient).stop(false);
-
-        // and - no new clients added
-        assertThat("mockServerClients.size", InstanceHolder.mockServerClients.size(), is(1));
-        assertThat("proxyClients.size", InstanceHolder.proxyClients.size(), is(1));
-    }
-
-    @Test
-    public void shouldStopSecureProxyOnlyRemotely() {
-        // given
-        InstanceHolder.mockServerClients.put(1, mockMockServerClient);
-        InstanceHolder.proxyClients.put(2, mockProxyClient);
-
-        // when
-        instanceHolder.stop(new Integer[0], -1, false);
-
-        // then
-        verify(mockMockServerClient, times(0)).stop(anyBoolean());
-        verify(mockProxyClient, times(0)).stop(anyBoolean());
-
-        // and - no new clients added
-        assertThat("mockServerClients.size", InstanceHolder.mockServerClients.size(), is(1));
-        assertThat("proxyClients.size", InstanceHolder.proxyClients.size(), is(1));
-    }
-
-    @Test
-    public void shouldStopMockServerAndProxyWhenNoClientExist() {
-        // when
-        instanceHolder.stop(new Integer[]{1,2}, 2, false);
-
-        // then
-        assertThat(InstanceHolder.mockServerClients.get(1), isA(MockServerClient.class));
-        assertThat(InstanceHolder.proxyClients.get(2), isA(ProxyClient.class));
+        new InstanceHolder().start(
+                new Integer[]{freePort},
+                -1,
+                "",
+                "WRONG",
+                null
+        );
     }
 }
