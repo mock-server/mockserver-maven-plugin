@@ -13,6 +13,6 @@ echo
 
 for folder in mockserver-maven-plugin mockserver-maven-plugin-integration-tests; do
   cd $folder
-  mvn clean install $1
+  mvn clean install -U $1
   cd ..
 done 
