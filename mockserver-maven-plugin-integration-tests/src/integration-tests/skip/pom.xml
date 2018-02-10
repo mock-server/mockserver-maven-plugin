@@ -20,7 +20,6 @@
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-integration-testing</artifactId>
             <version>@mockserver.version@</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -53,6 +52,26 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mock-server</groupId>
+                        <artifactId>mockserver-integration-testing</artifactId>
+                        <version>@mockserver.version@</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <!-- tests run after mock server stopped (to check it has been stopped) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                    <!-- allow debugging tests -->
+                    <!-- <forkCount>0</forkCount> -->
+                    <includes>
+                        <include>**/*StopTest.java</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
