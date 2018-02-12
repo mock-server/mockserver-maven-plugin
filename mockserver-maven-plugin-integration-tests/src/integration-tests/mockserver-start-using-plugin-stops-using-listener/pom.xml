@@ -91,6 +91,12 @@
                     <includes>
                         <include>**/*StopTest.java</include>
                     </includes>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>org.mockserver.test.PrintCurrentTestListener</value>
+                        </property>
+                    </properties>
                 </configuration>
                 <executions>
                     <execution>

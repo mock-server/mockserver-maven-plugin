@@ -50,13 +50,19 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- allow debugging tests -->
-                    <!-- <forkCount>0</forkCount> -->
+                    <forkCount>0</forkCount>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
                     <excludes>
                         <exclude>**/*StopTest.java</exclude>
                     </excludes>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>org.mockserver.test.PrintCurrentTestListener</value>
+                        </property>
+                    </properties>
                 </configuration>
             </plugin>
             <!-- tests run after mock server stopped (to check it has been stopped) -->
@@ -66,10 +72,16 @@
                 <version>2.20.1</version>
                 <configuration>
                     <!-- allow debugging tests -->
-                    <!-- <forkCount>0</forkCount> -->
+                    <forkCount>0</forkCount>
                     <includes>
                         <include>**/*StopTest.java</include>
                     </includes>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>org.mockserver.test.PrintCurrentTestListener</value>
+                        </property>
+                    </properties>
                 </configuration>
                 <executions>
                     <execution>

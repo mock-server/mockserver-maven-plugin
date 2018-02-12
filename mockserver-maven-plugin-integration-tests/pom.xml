@@ -17,7 +17,7 @@
     <properties>
         <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
         <maven-version>3.1.1</maven-version>
-        <maven-invoker-parallel-threads>3</maven-invoker-parallel-threads>
+        <maven-invoker-parallel-threads>1</maven-invoker-parallel-threads>
     </properties>
 
     <dependencies>
