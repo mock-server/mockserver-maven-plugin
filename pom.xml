@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mockserver-maven-plugin</artifactId>
-    <version>5.3.1-SNAPSHOT</version>
+    <version>5.4.1</version>
     <packaging>maven-plugin</packaging>
 
     <name>MockServer Maven Plugin</name>
