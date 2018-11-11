@@ -218,7 +218,7 @@
                         <mockserver.nioEventLoopThreadCount>1</mockserver.nioEventLoopThreadCount>
                     </environmentVariables>
                     <filterProperties>
-                        <mockserver.version>${project.version}</mockserver.version>
+                        <mockserver.version>${project.parent.version}</mockserver.version>
                     </filterProperties>
                     <settingsFile>src/integration-tests/settings.xml</settingsFile>
                     <extraArtifacts>
