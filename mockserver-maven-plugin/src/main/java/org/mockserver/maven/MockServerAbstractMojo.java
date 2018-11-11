@@ -121,7 +121,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
         return serverPorts;
     }
 
-    protected InstanceHolder getEmbeddedJettyHolder() {
+    protected InstanceHolder getLocalMockServerInstance() {
         if (instanceHolder == null) {
             // create on demand to avoid log creation for skipped plugins
             instanceHolder = new InstanceHolder();

@@ -1,6 +1,5 @@
 package org.mockserver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
@@ -17,7 +16,7 @@ public class MockServerStopMojo extends MockServerAbstractMojo {
             getLog().info("Skipping plugin execution");
         } else {
             getLog().info("Stopping the MockServer");
-            getEmbeddedJettyHolder().stop();
+            getLocalMockServerInstance().stop();
         }
     }
 }

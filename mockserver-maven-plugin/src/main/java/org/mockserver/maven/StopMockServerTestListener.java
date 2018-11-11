@@ -9,6 +9,8 @@ import org.mockserver.configuration.ConfigurationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 /**
  * @author jamesdbloom
  *
@@ -98,8 +100,16 @@ public class StopMockServerTestListener extends RunListener {
     @Override
     public void testRunFinished(Result result) throws Exception {
         if (!ConfigurationProperties.mockServerPort().isEmpty()) {
-            logger.info("Stopping the MockServer");
+            logger.info("Stopping the MockServer in Listener");
             new MockServerClient("127.0.0.1", ConfigurationProperties.mockServerPort().get(0)).stop();
+
+            try {
+                // ensure that shutdown has actually completed and won't
+                // cause class loader error if JVM starts unloading classes
+                SECONDS.sleep(3);
+            } catch (InterruptedException ignore) {
+                // ignore
+            }
         } else {
             logger.info("Failed to stop MockServer as HTTP port is unknown");
         }

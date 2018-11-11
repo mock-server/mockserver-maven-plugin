@@ -32,14 +32,14 @@ public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
             }
             try {
                 if (timeout != null && timeout > 0) {
-                    getEmbeddedJettyHolder().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
+                    getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
                     try {
                         settableFuture.get(timeout, TimeUnit.SECONDS);
                     } catch (TimeoutException te) {
                         // do nothing this is an expected exception when the timeout expires
                     }
                 } else {
-                    getEmbeddedJettyHolder().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
+                    getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
                     settableFuture.get();
                 }
             } catch (Exception e) {

@@ -44,12 +44,12 @@ public class MockServerAbstractMojoTest {
         };
 
         // then
-        assertSame(mockServerAbstractMojo.getEmbeddedJettyHolder(), mockServerAbstractMojo.getEmbeddedJettyHolder());
+        assertSame(mockServerAbstractMojo.getLocalMockServerInstance(), mockServerAbstractMojo.getLocalMockServerInstance());
     }
 
     @Test
     public void shouldNotCreateIfAlreadyInitialized() {
         // then
-        assertSame(mockEmbeddedJettyHolder, mockServerAbstractMojo.getEmbeddedJettyHolder());
+        assertSame(mockEmbeddedJettyHolder, mockServerAbstractMojo.getLocalMockServerInstance());
     }
 }

@@ -1,6 +1,5 @@
 package org.mockserver.maven;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.configuration.ConfigurationProperties;
@@ -8,16 +7,13 @@ import org.mockserver.initialize.ExpectationInitializer;
 import org.mockserver.mockserver.MockServer;
 import org.mockserver.model.ObjectWithReflectiveEqualsHashCodeToString;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * @author jamesdbloom
  */
 public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
 
-    @VisibleForTesting
-    static Map<Integer, MockServerClient> mockServerClients = new ConcurrentHashMap<Integer, MockServerClient>();
     private MockServer mockServer;
 
     public static void runInitializationClass(Integer[] mockServerPorts, ExpectationInitializer expectationInitializer) {
@@ -63,6 +59,14 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
     public void stop() {
         if (mockServer != null && mockServer.isRunning()) {
             mockServer.stop();
+
+            try {
+                // ensure that shutdown has actually completed and won't
+                // cause class loader error if JVM starts unloading classes
+                SECONDS.sleep(3);
+            } catch (InterruptedException ignore) {
+                // ignore
+            }
         }
     }
 }

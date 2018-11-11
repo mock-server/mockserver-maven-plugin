@@ -1,6 +1,5 @@
 package org.mockserver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
@@ -33,7 +32,7 @@ public class MockServerStartMojo extends MockServerAbstractMojo {
                         + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
                 );
             }
-            getEmbeddedJettyHolder().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
+            getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
         }
 
     }

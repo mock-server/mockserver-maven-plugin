@@ -1,6 +1,5 @@
 package org.mockserver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.mockserver.configuration.ConfigurationProperties;
 
@@ -12,7 +11,7 @@ import java.util.Arrays;
  *
  * To run from command line:
  *
- *    mvn -Dmockserver.serverPort="1080" org.mock-server:mockserver-maven-plugin:5.3.0:stopForked
+ *    mvn -Dmockserver.serverPort="1080" org.mock-server:mockserver-maven-plugin:5.4.1:stopForked
  *
  * @author jamesdbloom
  */
@@ -26,7 +25,7 @@ public class MockServerStopForkedMojo extends MockServerAbstractMojo {
         if (skip) {
             getLog().info("Skipping plugin execution");
         } else {
-            getEmbeddedJettyHolder().stop(getServerPorts(), false);
+            getLocalMockServerInstance().stop(getServerPorts(), false);
             if (getServerPorts() != null) {
                 getLog().info("Stopped MockServer running on port [" + Arrays.toString(getServerPorts()) + "]");
             }

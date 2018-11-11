@@ -7,12 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
 import org.mockserver.cli.Main;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.configuration.ConfigurationProperties;
@@ -33,7 +30,7 @@ import static org.mockserver.maven.InstanceHolder.runInitializationClass;
  * <p>
  * To run from command line:
  * <p>
- * mvn -Dmockserver.serverPort="1080" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.3.0:runForked
+ * mvn -Dmockserver.serverPort="1080" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.4.1:runForked
  *
  * @author jamesdbloom
  */
@@ -63,7 +60,7 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
         if (skip) {
             getLog().info("Skipping plugin execution");
         } else {
-            getEmbeddedJettyHolder().stop(getServerPorts(), true);
+            getLocalMockServerInstance().stop(getServerPorts(), true);
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
@@ -177,13 +174,13 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
 
     @VisibleForTesting
     String getVersion() {
-        String version = "5.3.0";
+        String version = "5.4.1";
         try {
             java.util.Properties p = new java.util.Properties();
             InputStream is = getClass().getResourceAsStream("/META-INF/maven/org.mock-server/mockserver-maven-plugin/pom.properties");
             if (is != null) {
                 p.load(is);
-                version = p.getProperty("version", "5.3.0");
+                version = p.getProperty("version", "5.4.1");
             }
         } catch (Exception e) {
             // ignore
