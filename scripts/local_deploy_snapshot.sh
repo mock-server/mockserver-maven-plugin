@@ -11,8 +11,4 @@ echo
 mvn -version
 echo
 
-for folder in mockserver-maven-plugin mockserver-maven-plugin-integration-tests; do
-  cd $folder
-  mvn clean deploy $1
-  cd ..
-done 
+mvn clean deploy $1 -Djava.security.egd=file:/dev/./urandom

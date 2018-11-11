@@ -11,8 +11,5 @@ echo
 mvn -version
 echo
 
-for folder in mockserver-maven-plugin mockserver-maven-plugin-integration-tests; do
-  cd $folder
-  mvn clean install -U $1
-  cd ..
-done 
+# to run from specific module use argument in quotes "-rf mockserver-war"
+mvn clean install $1 -Djava.security.egd=file:/dev/urandom
