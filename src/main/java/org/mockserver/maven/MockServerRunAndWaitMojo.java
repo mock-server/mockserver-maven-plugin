@@ -26,7 +26,7 @@ public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
             getLog().info("Skipping plugin execution");
         } else {
             if (getLog().isInfoEnabled()) {
-                getLog().info("mockserver:runAndWait about to start MockServer on: "
+                getLog().info("mockserver:run about to start MockServer on: "
                         + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
                 );
             }
