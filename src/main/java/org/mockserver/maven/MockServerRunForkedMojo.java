@@ -87,7 +87,7 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
             if (getServerPorts() != null) {
                 arguments.add("-serverPort");
                 arguments.add("" + Joiner.on(",").join(getServerPorts()));
-                ConfigurationProperties.mockServerPort(getServerPorts());
+                MockServerAbstractMojo.mockServerPort(getServerPorts());
             }
             if (proxyRemotePort != -1) {
                 arguments.add("-proxyRemotePort");

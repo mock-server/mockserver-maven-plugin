@@ -42,7 +42,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
                 } else {
                     mockServer = new MockServer(mockServerPorts);
                 }
-                ConfigurationProperties.mockServerPort(mockServer.getLocalPort());
+                MockServerAbstractMojo.mockServerPort(mockServer.getLocalPort());
             }
             runInitializationClass(mockServerPorts, expectationInitializer);
         } else {

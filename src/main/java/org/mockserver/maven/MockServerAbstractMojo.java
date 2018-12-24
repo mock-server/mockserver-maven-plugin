@@ -7,7 +7,9 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.mockserver.configuration.IntegerStringListParser;
 import org.mockserver.initialize.ExpectationInitializer;
+import org.mockserver.logging.MockServerLogger;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -15,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -161,4 +164,19 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
         }
         return null;
     }
+
+    public static List<Integer> mockServerPort() {
+        final String mockServerPort = System.getProperty("mockserver.mockServerPort");
+        try {
+            return new IntegerStringListParser().toList(mockServerPort);
+        } catch (NumberFormatException nfe) {
+            MockServerLogger.MOCK_SERVER_LOGGER.error("NumberFormatException converting " + "mockserver.mockServerPort" + " with value [" + mockServerPort + "]", nfe);
+            return Collections.emptyList();
+        }
+    }
+
+    public static void mockServerPort(Integer... port) {
+        System.setProperty("mockserver.mockServerPort", new IntegerStringListParser().toString(port));
+    }
+
 }
