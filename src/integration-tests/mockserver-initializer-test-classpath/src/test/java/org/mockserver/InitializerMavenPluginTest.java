@@ -1,5 +1,9 @@
 package org.mockserver;
 
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockserver.client.netty.NettyHttpClient;
 import org.mockserver.model.Header;
@@ -13,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.mockserver.model.HttpStatusCode.OK_200;
 
@@ -35,7 +40,19 @@ public class InitializerMavenPluginTest {
             "transfer-encoding"
     );
     // http client
-    private NettyHttpClient httpClient = new NettyHttpClient();
+    private static EventLoopGroup clientEventLoopGroup;
+    private static NettyHttpClient httpClient;
+
+    @BeforeClass
+    public static void createClientAndEventLoopGroup() {
+        clientEventLoopGroup = new NioEventLoopGroup();
+        httpClient = new NettyHttpClient(clientEventLoopGroup, null);
+    }
+
+    @AfterClass
+    public static void stopEventLoopGroup() {
+        clientEventLoopGroup.shutdownGracefully(0, 0, MILLISECONDS).syncUninterruptibly();
+    }
 
     @Test
     public void clientCanCallServer() {

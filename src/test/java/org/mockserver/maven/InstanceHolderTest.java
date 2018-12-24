@@ -1,5 +1,9 @@
 package org.mockserver.maven;
 
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -19,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -32,6 +37,20 @@ public class InstanceHolderTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
+    private static EventLoopGroup clientEventLoopGroup;
+    private static NettyHttpClient httpClient;
+
+    @BeforeClass
+    public static void createClientAndEventLoopGroup() {
+        clientEventLoopGroup = new NioEventLoopGroup();
+        httpClient = new NettyHttpClient(clientEventLoopGroup, null);
+    }
+
+    @AfterClass
+    public static void stopEventLoopGroup() {
+        clientEventLoopGroup.shutdownGracefully(0, 0, MILLISECONDS).syncUninterruptibly();
+    }
 
     @Test
     public void shouldStartMockServer() {
@@ -76,7 +95,8 @@ public class InstanceHolderTest {
                     "DEBUG",
                     null
             );
-            final HttpResponse response = new NettyHttpClient()
+            final HttpResponse response =
+                    httpClient
                     .sendRequest(
                             request()
                                     .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
@@ -109,7 +129,8 @@ public class InstanceHolderTest {
                     "DEBUG",
                     null
             );
-            final HttpResponse response = new NettyHttpClient()
+            final HttpResponse response =
+                    httpClient
                     .sendRequest(
                             request()
                                     .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
