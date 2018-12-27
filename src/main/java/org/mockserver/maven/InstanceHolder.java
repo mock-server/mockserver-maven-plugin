@@ -3,7 +3,7 @@ package org.mockserver.maven;
 import com.google.common.base.Strings;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.configuration.ConfigurationProperties;
-import org.mockserver.initialize.ExpectationInitializer;
+import org.mockserver.client.initialize.ExpectationInitializer;
 import org.mockserver.mockserver.MockServer;
 import org.mockserver.model.ObjectWithReflectiveEqualsHashCodeToString;
 

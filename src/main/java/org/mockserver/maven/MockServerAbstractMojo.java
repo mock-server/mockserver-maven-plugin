@@ -8,7 +8,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mockserver.configuration.IntegerStringListParser;
-import org.mockserver.initialize.ExpectationInitializer;
+import org.mockserver.client.initialize.ExpectationInitializer;
 import org.mockserver.logging.MockServerLogger;
 
 import java.io.File;

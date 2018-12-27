@@ -1,7 +1,7 @@
 package org.mockserver.maven;
 
 import org.mockserver.client.MockServerClient;
-import org.mockserver.initialize.ExpectationInitializer;
+import org.mockserver.client.initialize.ExpectationInitializer;
 
 /**
  * @author jamesdbloom

@@ -1,7 +1,7 @@
 package org.mockserver;
 
 import org.mockserver.client.MockServerClient;
-import org.mockserver.initialize.ExpectationInitializer;
+import org.mockserver.client.initialize.ExpectationInitializer;
 
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
