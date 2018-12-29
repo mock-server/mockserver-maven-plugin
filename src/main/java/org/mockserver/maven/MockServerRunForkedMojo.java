@@ -30,7 +30,7 @@ import static org.mockserver.maven.InstanceHolder.runInitializationClass;
  * <p>
  * To run from command line:
  * <p>
- * mvn -Dmockserver.serverPort="1080" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.5.0:runForked
+ * mvn -Dmockserver.serverPort="1080" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.5.1:runForked
  *
  * @author jamesdbloom
  */
@@ -174,13 +174,13 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
 
     @VisibleForTesting
     String getVersion() {
-        String version = "5.5.0";
+        String version = "5.5.1";
         try {
             java.util.Properties p = new java.util.Properties();
             InputStream is = getClass().getResourceAsStream("/META-INF/maven/org.mock-server/mockserver-maven-plugin/pom.properties");
             if (is != null) {
                 p.load(is);
-                version = p.getProperty("version", "5.5.0");
+                version = p.getProperty("version", "5.5.1");
             }
         } catch (Exception e) {
             // ignore
