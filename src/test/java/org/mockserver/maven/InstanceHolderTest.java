@@ -7,19 +7,15 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockserver.cli.Main;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.client.netty.NettyHttpClient;
+import org.mockserver.client.NettyHttpClient;
 import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.echo.http.EchoServer;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.socket.PortFactory;
 import org.slf4j.event.Level;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
@@ -97,12 +93,12 @@ public class InstanceHolderTest {
             );
             final HttpResponse response =
                     httpClient
-                    .sendRequest(
-                            request()
-                                    .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
-                            10,
-                            TimeUnit.SECONDS
-                    );
+                            .sendRequest(
+                                    request()
+                                            .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
+                                    10,
+                                    TimeUnit.SECONDS
+                            );
 
             // then
             assertThat(mockServerClient.isRunning(), is(true));
@@ -131,12 +127,12 @@ public class InstanceHolderTest {
             );
             final HttpResponse response =
                     httpClient
-                    .sendRequest(
-                            request()
-                                    .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
-                            10,
-                            TimeUnit.SECONDS
-                    );
+                            .sendRequest(
+                                    request()
+                                            .withHeader(HOST.toString(), "127.0.0.1:" + freePort),
+                                    10,
+                                    TimeUnit.SECONDS
+                            );
 
             // then
             assertThat(mockServerClient.isRunning(), is(true));

@@ -7,13 +7,13 @@ export JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=1024m -Xmx2048m"
 echo
 java -version
 echo
-mvn -version
+./mvnw -version
 echo
 
 if test "$BUILDKITE_BRANCH" = "master"; then
     echo "BRANCH: MASTER"
-    mvn -T 1C clean install $1 -Djava.security.egd=file:/dev/./urandom
+    ./mvnw clean deploy $1 -Djava.security.egd=file:/dev/./urandom
 else
     echo "BRANCH: $CURRENT_BRANCH"
-    mvn -T 1C clean install $1 -Djava.security.egd=file:/dev/./urandom
+    ./mvnw clean install $1 -Djava.security.egd=file:/dev/./urandom
 fi
