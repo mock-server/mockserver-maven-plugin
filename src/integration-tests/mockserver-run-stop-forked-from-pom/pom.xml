@@ -50,6 +50,7 @@
                     <logLevel>INFO</logLevel>
                     <serverPort>3086</serverPort>
                     <pipeLogToConsole>false</pipeLogToConsole>
+                    <jvmOptions>-Dfoo=bar</jvmOptions>
                 </configuration>
                 <executions>
                     <execution>
