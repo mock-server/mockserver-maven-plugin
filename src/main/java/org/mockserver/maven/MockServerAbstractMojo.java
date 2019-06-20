@@ -7,8 +7,8 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.mockserver.configuration.IntegerStringListParser;
 import org.mockserver.client.initialize.ExpectationInitializer;
+import org.mockserver.configuration.IntegerStringListParser;
 import org.mockserver.logging.MockServerLogger;
 
 import java.io.File;
@@ -20,14 +20,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.mockserver.file.FileReader.readFileFromClassPathOrPath;
+
 /**
  * @author jamesdbloom
  * @plexus.component role="org.codehaus.plexus.component.configurator.ComponentConfigurator"
  * role-hint="include-project-dependencies"
  * @plexus.requirement role="org.codehaus.plexus.component.configurator.converters.lookup.ConverterLookup"
  * role-hint="default"
- * @requiresDependencyCollection
- * @requiresDependencyResolution
+ * @requiresDependencyCollection test
+ * @requiresDependencyResolution test
  */
 public abstract class MockServerAbstractMojo extends AbstractMojo {
 
@@ -36,6 +39,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      */
     @VisibleForTesting
     protected static InstanceHolder instanceHolder;
+
     /**
      * The HTTP, HTTPS, SOCKS and HTTP CONNECT port for the MockServer
      * for both mocking and proxying requests. Port unification is used
@@ -43,6 +47,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      */
     @Parameter(property = "mockserver.serverPort", defaultValue = "")
     protected String serverPort = "";
+
     /**
      * Optionally enables port forwarding mode. When specified all
      * requests received will be forwarded to the specified port,
@@ -50,6 +55,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      */
     @Parameter(property = "mockserver.proxyRemotePort", defaultValue = "-1")
     protected Integer proxyRemotePort = -1;
+
     /**
      * Specified the host to forward all proxy requests to when port
      * forwarding mode has been enabled using the proxyRemotePort option.
@@ -59,27 +65,32 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      */
     @Parameter(property = "mockserver.proxyRemoteHost", defaultValue = "")
     protected String proxyRemoteHost = "";
+
     /**
      * Timeout to wait before stopping MockServer, to run MockServer indefinitely do not set a value
      */
     @Parameter(property = "mockserver.timeout")
     protected Integer timeout;
+
     /**
      * Optionally specify log level as TRACE, DEBUG, INFO, WARN, ERROR or
      * OFF. If not specified default is INFO.
      */
     @Parameter(property = "mockserver.logLevel", defaultValue = "INFO")
     protected String logLevel = "INFO";
+
     /**
      * Skip the plugin execution completely
      */
     @Parameter(property = "mockserver.skip", defaultValue = "false")
     protected boolean skip;
+
     /**
      * If true the console of the forked JVM will be piped to the Maven console
      */
     @Parameter(property = "mockserver.pipeLogToConsole", defaultValue = "false")
     protected boolean pipeLogToConsole;
+
     /**
      * To enable the creation of default expectations that are generic across all tests or mocking scenarios a class can be specified
      * to initialize expectations in the MockServer, this class must implement org.mockserver.initialize.ExpectationInitializer interface,
@@ -89,6 +100,14 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      */
     @Parameter(property = "mockserver.initializationClass")
     protected String initializationClass;
+
+    /**
+     * To enable the creation of default expectations that are generic across all tests or mocking scenarios a json filed can be specified
+     * to initialize expectations in the MockServer. It should be noted that it is generally better practice to create all expectations
+     * locally in each test (or test class) for clarity, simplicity and to avoid brittle tests
+     */
+    @Parameter(property = "mockserver.initializationJson")
+    protected String initializationJson;
 
     /**
      * The main classpath location of the project using this plugin
@@ -101,6 +120,9 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      */
     @Parameter(property = "project.testClasspathElements", required = true, readonly = true)
     protected List<String> testClasspath;
+
+    private String compileResourcePath;
+    private String testResourcePath;
 
     /**
      * The plugin dependencies
@@ -132,20 +154,38 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
         return instanceHolder;
     }
 
-    protected ExpectationInitializer createInitializer() {
+    protected ExpectationInitializer createInitializerClass() {
         try {
             ClassLoader contextClassLoader = setupClasspath();
-            if (contextClassLoader != null && StringUtils.isNotEmpty(initializationClass)) {
-                Constructor<?> initializerClassConstructor = contextClassLoader.loadClass(initializationClass).getDeclaredConstructor();
-                Object expectationInitializer = initializerClassConstructor.newInstance();
-                if (expectationInitializer instanceof ExpectationInitializer) {
-                    return (ExpectationInitializer) expectationInitializer;
+            if (isNotBlank(initializationClass) && contextClassLoader != null) {
+                Class<?> loadedClass = contextClassLoader.loadClass(initializationClass);
+                if (loadedClass != null) {
+                    Constructor<?> initializerClassConstructor = loadedClass.getDeclaredConstructor();
+                    Object expectationInitializer = initializerClassConstructor.newInstance();
+                    if (expectationInitializer instanceof ExpectationInitializer) {
+                        return (ExpectationInitializer) expectationInitializer;
+                    }
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    protected String createInitializerJson() {
+        try {
+            if (isNotBlank(initializationJson) && compileResourcePath != null) {
+                try {
+                    return readFileFromClassPathOrPath(compileResourcePath + "/" + initializationJson);
+                } catch (RuntimeException exception) {
+                    return readFileFromClassPathOrPath(testResourcePath + "/" + initializationJson);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return "";
     }
 
     private ClassLoader setupClasspath() throws MalformedURLException {
@@ -155,7 +195,13 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
                 urls[i] = new File(compileClasspath.get(i)).toURI().toURL();
             }
             for (int i = compileClasspath.size(); i < compileClasspath.size() + testClasspath.size(); i++) {
-                urls[i] = new File(testClasspath.get(i - compileClasspath.size())).toURI().toURL();
+                String testClasspathEntry = testClasspath.get(i - compileClasspath.size());
+                urls[i] = new File(testClasspathEntry).toURI().toURL();
+                if (testClasspathEntry.endsWith("target/classes")) {
+                    compileResourcePath = testClasspathEntry;
+                } else if (testClasspathEntry.endsWith("target/test-classes")) {
+                    testResourcePath = testClasspathEntry;
+                }
             }
 
             ClassLoader contextClassLoader = URLClassLoader.newInstance(urls, Thread.currentThread().getContextClassLoader());

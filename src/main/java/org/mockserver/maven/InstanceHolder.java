@@ -2,12 +2,16 @@ package org.mockserver.maven;
 
 import com.google.common.base.Strings;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.client.initialize.ExpectationInitializer;
+import org.mockserver.configuration.ConfigurationProperties;
+import org.mockserver.logging.MockServerLogger;
+import org.mockserver.mock.Expectation;
 import org.mockserver.mockserver.MockServer;
 import org.mockserver.model.ObjectWithReflectiveEqualsHashCodeToString;
+import org.mockserver.serialization.ExpectationSerializer;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * @author jamesdbloom
@@ -16,11 +20,18 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
 
     private MockServer mockServer;
 
-    public static void runInitializationClass(Integer[] mockServerPorts, ExpectationInitializer expectationInitializer) {
-        if (mockServerPorts != null && mockServerPorts.length > 0 && expectationInitializer != null) {
-            expectationInitializer.initializeExpectations(
-                    new MockServerClient("127.0.0.1", mockServerPorts[0])
-            );
+    public static void runInitialization(Integer[] mockServerPorts, ExpectationInitializer expectationClassInitializer, String expectationJsonInitializer) {
+        if (mockServerPorts != null && mockServerPorts.length > 0) {
+            if (expectationClassInitializer != null) {
+                expectationClassInitializer
+                        .initializeExpectations(
+                                new MockServerClient("127.0.0.1", mockServerPorts[0])
+                        );
+            }
+            if (isNotBlank(expectationJsonInitializer)) {
+                Expectation[] expectations = new ExpectationSerializer(new MockServerLogger()).deserializeArray(expectationJsonInitializer);
+                new MockServerClient("127.0.0.1", mockServerPorts[0]).sendExpectation(expectations);
+            }
         }
     }
 
@@ -28,7 +39,8 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
                       final Integer proxyRemotePort,
                       String proxyRemoteHost,
                       final String logLevel,
-                      ExpectationInitializer expectationInitializer) {
+                      ExpectationInitializer expectationClassInitializer,
+                      String expectationJsonInitializer) {
         if (mockServer == null || !mockServer.isRunning()) {
             if (logLevel != null) {
                 ConfigurationProperties.logLevel(logLevel);
@@ -44,7 +56,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
                 }
                 MockServerAbstractMojo.mockServerPort(mockServer.getLocalPort());
             }
-            runInitializationClass(mockServerPorts, expectationInitializer);
+            runInitialization(mockServerPorts, expectationClassInitializer, expectationJsonInitializer);
         } else {
             throw new IllegalStateException("MockServer is already running!");
         }

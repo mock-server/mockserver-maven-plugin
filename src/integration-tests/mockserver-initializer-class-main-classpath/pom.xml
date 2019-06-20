@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mock-server.integration-test</groupId>
-    <artifactId>mockserver-run-stop-forked-from-pom</artifactId>
+    <artifactId>mockserver-initializer-main-classpath</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -48,22 +48,23 @@
                 <version>@mockserver.version@</version>
                 <configuration>
                     <logLevel>INFO</logLevel>
-                    <serverPort>3086</serverPort>
+                    <serverPort>1080,2080</serverPort>
+                    <initializationClass>org.mockserver.MainClasspathInitializationClass</initializationClass>
                     <pipeLogToConsole>false</pipeLogToConsole>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>initialize</id>
-                        <phase>initialize</phase>
+                        <id>process-test-classes</id>
+                        <phase>process-test-classes</phase>
                         <goals>
-                            <goal>runForked</goal>
+                            <goal>start</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>pre-integration-test</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>stopForked</goal>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>

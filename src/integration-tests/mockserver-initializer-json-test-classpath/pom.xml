@@ -25,12 +25,6 @@
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-integration-testing</artifactId>
             <version>@mockserver.version@</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -53,9 +47,10 @@
                 <artifactId>mockserver-maven-plugin</artifactId>
                 <version>@mockserver.version@</version>
                 <configuration>
-                    <logLevel>INFO</logLevel>
+                    <logLevel>DEBUG</logLevel>
+                    <pipeLogToConsole>true</pipeLogToConsole>
                     <serverPort>1080,2080</serverPort>
-                    <initializationClass>org.mockserver.MainClasspathInitializationClass</initializationClass>
+                    <initializationJson>org/mockserver/initializerJson.json</initializationJson>
                     <pipeLogToConsole>false</pipeLogToConsole>
                 </configuration>
                 <executions>

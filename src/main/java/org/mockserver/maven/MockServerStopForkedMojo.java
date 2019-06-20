@@ -11,7 +11,7 @@ import java.util.Arrays;
  *
  * To run from command line:
  *
- *    mvn -Dmockserver.serverPort="1080" org.mock-server:mockserver-maven-plugin:5.5.1:stopForked
+ *    mvn -Dmockserver.serverPort="1080" org.mock-server:mockserver-maven-plugin:5.5.4:stopForked
  *
  * @author jamesdbloom
  */

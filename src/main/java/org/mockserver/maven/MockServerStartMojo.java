@@ -7,6 +7,8 @@ import org.mockserver.configuration.ConfigurationProperties;
 
 import java.util.Arrays;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * Start the MockServer in the initialize phase of the build and continue build so that tests can run that rely on the MockServer
  *
@@ -21,7 +23,7 @@ public class MockServerStartMojo extends MockServerAbstractMojo {
     private InstanceHolder embeddedJettyHolder;
 
     public void execute() {
-        if (logLevel != null) {
+        if (isNotBlank(logLevel)) {
             ConfigurationProperties.logLevel(logLevel);
         }
         if (skip) {
@@ -32,7 +34,7 @@ public class MockServerStartMojo extends MockServerAbstractMojo {
                         + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
                 );
             }
-            getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
+            getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializerClass(), createInitializerJson());
         }
 
     }

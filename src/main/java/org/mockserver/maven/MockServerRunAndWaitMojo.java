@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * Run the MockServer and wait for a specified timeout (or indefinitely)
  *
@@ -19,7 +21,7 @@ public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
     private SettableFuture settableFuture = SettableFuture.create();
 
     public void execute() {
-        if (logLevel != null) {
+        if (isNotBlank(logLevel)) {
             ConfigurationProperties.logLevel(logLevel);
         }
         if (skip) {
@@ -32,14 +34,14 @@ public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
             }
             try {
                 if (timeout != null && timeout > 0) {
-                    getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
+                    getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializerClass(), createInitializerJson());
                     try {
                         settableFuture.get(timeout, TimeUnit.SECONDS);
                     } catch (TimeoutException te) {
                         // do nothing this is an expected exception when the timeout expires
                     }
                 } else {
-                    getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializer());
+                    getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, createInitializerClass(), createInitializerJson());
                     settableFuture.get();
                 }
             } catch (Exception e) {

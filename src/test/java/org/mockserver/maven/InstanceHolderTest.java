@@ -62,8 +62,8 @@ public class InstanceHolderTest {
                     -1,
                     null,
                     "DEBUG",
-                    null
-            );
+                    null,
+                    "");
 
             // then
             assertThat(mockServerClient.isRunning(), is(true));
@@ -89,8 +89,8 @@ public class InstanceHolderTest {
                     echoServer.getPort(),
                     "127.0.0.1",
                     "DEBUG",
-                    null
-            );
+                    null,
+                    "");
             final HttpResponse response =
                     httpClient
                             .sendRequest(
@@ -123,8 +123,8 @@ public class InstanceHolderTest {
                     echoServer.getPort(),
                     "",
                     "DEBUG",
-                    null
-            );
+                    null,
+                    "");
             final HttpResponse response =
                     httpClient
                             .sendRequest(
@@ -157,7 +157,7 @@ public class InstanceHolderTest {
                 -1,
                 "",
                 "WRONG",
-                null
-        );
+                null,
+                "");
     }
 }

@@ -9,10 +9,10 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.repository.RepositorySystem;
 import org.mockserver.cli.Main;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.configuration.ConfigurationProperties;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,19 +23,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockserver.maven.InstanceHolder.runInitializationClass;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.mockserver.maven.InstanceHolder.runInitialization;
 
 /**
  * Run a forked instance of the MockServer
  * <p>
  * To run from command line:
  * <p>
- * mvn -Dmockserver.serverPort="1080" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.5.1:runForked
+ * mvn -Dmockserver.serverPort="1080" -Dmockserver.logLevel="TRACE" org.mock-server:mockserver-maven-plugin:5.5.4:runForked
  *
  * @author jamesdbloom
  */
 @Mojo(name = "runForked", requiresProject = false, threadSafe = false)
 public class MockServerRunForkedMojo extends MockServerAbstractMojo {
+
+    /**
+     * Set JVM options for forked JVM
+     */
+    @Parameter(property = "mockserver.jvmOptions")
+    protected String jvmOptions;
 
     /**
      * Used to look up Artifacts in the remote repository.
@@ -74,6 +81,9 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
             List<String> arguments = new ArrayList<>(Collections.singletonList(getJavaBin()));
 //            arguments.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5010");
             arguments.add("-Dfile.encoding=UTF-8");
+            if (isNotBlank(jvmOptions)) {
+                arguments.add(jvmOptions);
+            }
             arguments.add("-cp");
             StringBuilder classPath = new StringBuilder(resolvePathForJarWithDependencies());
             if (dependencies != null && !dependencies.isEmpty()) {
@@ -119,7 +129,7 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
             if (getServerPorts() != null && getServerPorts().length > 0) {
                 new MockServerClient("localhost", getServerPorts()[0]).isRunning();
             }
-            runInitializationClass(getServerPorts(), createInitializer());
+            runInitialization(getServerPorts(), createInitializerClass(), createInitializerJson());
         }
 
     }
@@ -174,13 +184,13 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
 
     @VisibleForTesting
     String getVersion() {
-        String version = "5.5.1";
+        String version = "5.5.4";
         try {
             java.util.Properties p = new java.util.Properties();
             InputStream is = getClass().getResourceAsStream("/META-INF/maven/org.mock-server/mockserver-maven-plugin/pom.properties");
             if (is != null) {
                 p.load(is);
-                version = p.getProperty("version", "5.5.1");
+                version = p.getProperty("version", "5.5.4");
             }
         } catch (Exception e) {
             // ignore

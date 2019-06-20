@@ -33,12 +33,13 @@ public class MockServerStartMojoTest {
         mockServerStartMojo.serverPort = "1,2";
         mockServerStartMojo.logLevel = "WARN";
         mockServerStartMojo.initializationClass = "org.mockserver.maven.ExampleInitializationClass";
+        mockServerStartMojo.initializationJson = "org/mockserver/maven/initializerJson.json";
 
         // when
         mockServerStartMojo.execute();
 
         // then
-        verify(mockInstanceHolder).start(eq(new Integer[]{1, 2}), eq(-1), eq(""), eq("WARN"), any(ExampleInitializationClass.class));
+        verify(mockInstanceHolder).start(eq(new Integer[]{1, 2}), eq(-1), eq(""), eq("WARN"), any(ExampleInitializationClass.class), eq(""));
     }
 
     @Test
@@ -49,12 +50,13 @@ public class MockServerStartMojoTest {
         mockServerStartMojo.proxyRemoteHost = "remoteHost";
         mockServerStartMojo.logLevel = "WARN";
         mockServerStartMojo.initializationClass = "org.mockserver.maven.ExampleInitializationClass";
+        mockServerStartMojo.initializationJson = "org/mockserver/maven/initializerJson.json";
 
         // when
         mockServerStartMojo.execute();
 
         // then
-        verify(mockInstanceHolder).start(eq(new Integer[]{1, 2}), eq(3), eq("remoteHost"), eq("WARN"), any(ExampleInitializationClass.class));
+        verify(mockInstanceHolder).start(eq(new Integer[]{1, 2}), eq(3), eq("remoteHost"), eq("WARN"), any(ExampleInitializationClass.class), eq(""));
     }
 
     @Test

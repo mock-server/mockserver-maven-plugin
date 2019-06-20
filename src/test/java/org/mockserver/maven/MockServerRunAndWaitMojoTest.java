@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -46,7 +47,7 @@ public class MockServerRunAndWaitMojoTest {
         mockServerRunAndWaitMojo.execute();
 
         // then
-        verify(mockInstanceHolder).start(eq(new Integer[]{1,2}), eq(-1), eq(""), eq("WARN"), any(ExampleInitializationClass.class));
+        verify(mockInstanceHolder).start(eq(new Integer[]{1, 2}), eq(-1), eq(""), eq("WARN"), any(ExampleInitializationClass.class), eq(""));
         verify(objectSettableFuture).get();
     }
 
@@ -72,7 +73,7 @@ public class MockServerRunAndWaitMojoTest {
         mockServerRunAndWaitMojo.execute();
 
         // then
-        verify(mockInstanceHolder).start(eq(new Integer[]{1,2}), eq(-1), eq(""), eq("INFO"), any(ExampleInitializationClass.class));
+        verify(mockInstanceHolder).start(eq(new Integer[]{1, 2}), eq(-1), eq(""), eq("INFO"), any(ExampleInitializationClass.class), eq(""));
         verify(objectSettableFuture).get(2, TimeUnit.SECONDS);
     }
 
