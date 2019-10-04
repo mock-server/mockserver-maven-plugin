@@ -197,9 +197,9 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
             for (int i = compileClasspath.size(); i < compileClasspath.size() + testClasspath.size(); i++) {
                 String testClasspathEntry = testClasspath.get(i - compileClasspath.size());
                 urls[i] = new File(testClasspathEntry).toURI().toURL();
-                if (testClasspathEntry.endsWith("target/classes")) {
+                if (testClasspathEntry.matches(".*[\\\\|/]target[\\\\|/]classes")) {
                     compileResourcePath = testClasspathEntry;
-                } else if (testClasspathEntry.endsWith("target/test-classes")) {
+                } else if (testClasspathEntry.matches(".*[\\\\|/]target[\\\\|/]test-classes")) {
                     testResourcePath = testClasspathEntry;
                 }
             }
