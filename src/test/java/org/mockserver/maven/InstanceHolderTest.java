@@ -11,6 +11,7 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.client.NettyHttpClient;
 import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.echo.http.EchoServer;
+import org.mockserver.logging.MockServerLogger;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.socket.PortFactory;
 import org.slf4j.event.Level;
@@ -20,9 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.fail;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -40,7 +42,7 @@ public class InstanceHolderTest {
     @BeforeClass
     public static void createClientAndEventLoopGroup() {
         clientEventLoopGroup = new NioEventLoopGroup();
-        httpClient = new NettyHttpClient(clientEventLoopGroup, null);
+        httpClient = new NettyHttpClient(new MockServerLogger(), clientEventLoopGroup, null);
     }
 
     @AfterClass
@@ -147,17 +149,20 @@ public class InstanceHolderTest {
         // given
         final int freePort = PortFactory.findFreePort();
 
-        // then
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage(containsString("log level \"WRONG\" is not legal it must be one of \"TRACE\", \"DEBUG\", \"INFO\", \"WARN\", \"ERROR\", \"OFF\""));
-
         // when
-        new InstanceHolder().start(
-                new Integer[]{freePort},
-                -1,
-                "",
-                "WRONG",
-                null,
-                "");
+        try {
+            new InstanceHolder().start(
+                    new Integer[]{freePort},
+                    -1,
+                    "",
+                    "WRONG",
+                    null,
+                    "");
+            fail();
+        } catch (Exception iae) {
+            // then
+            assertThat(iae, instanceOf(IllegalArgumentException.class));
+            assertThat(iae.getMessage(), is("log level \"WRONG\" is not legal it must be one of SL4J levels: \"TRACE\", \"DEBUG\", \"INFO\", \"WARN\", \"ERROR\", \"OFF\" or the Java Logger levels: \"FINEST\", \"FINE\", \"INFO\", \"WARNING\", \"SEVERE\", \"OFF\""));
+        }
     }
 }

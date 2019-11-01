@@ -9,7 +9,9 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mockserver.client.initialize.ExpectationInitializer;
 import org.mockserver.configuration.IntegerStringListParser;
+import org.mockserver.log.model.LogEntry;
 import org.mockserver.logging.MockServerLogger;
+import org.slf4j.event.Level;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -34,6 +36,7 @@ import static org.mockserver.file.FileReader.readFileFromClassPathOrPath;
  */
 public abstract class MockServerAbstractMojo extends AbstractMojo {
 
+    private static final MockServerLogger MOCK_SERVER_LOGGER = new MockServerLogger();
     /**
      * Holds reference to jetty across plugin execution
      */
@@ -214,15 +217,39 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
     public static List<Integer> mockServerPort() {
         final String mockServerPort = System.getProperty("mockserver.mockServerPort");
         try {
-            return new IntegerStringListParser().toList(mockServerPort);
+            return toList(mockServerPort);
         } catch (NumberFormatException nfe) {
-            MockServerLogger.MOCK_SERVER_LOGGER.error("NumberFormatException converting " + "mockserver.mockServerPort" + " with value [" + mockServerPort + "]", nfe);
+            MOCK_SERVER_LOGGER.logEvent(
+                    new LogEntry()
+                            .setType(LogEntry.LogMessageType.EXCEPTION)
+                            .setLogLevel(Level.ERROR)
+                            .setMessageFormat("NumberFormatException converting " + "mockserver.mockServerPort" + " with value [" + mockServerPort + "]")
+                            .setThrowable(nfe)
+            );
             return Collections.emptyList();
         }
     }
 
     public static void mockServerPort(Integer... port) {
         System.setProperty("mockserver.mockServerPort", new IntegerStringListParser().toString(port));
+    }
+
+    private static List<Integer> toList(String integers) {
+        List<Integer> integerList = new ArrayList<>();
+        for (String integer : Splitter.on(",").split(integers)) {
+            try {
+                integerList.add(Integer.parseInt(integer.trim()));
+            } catch (NumberFormatException throwable) {
+                MOCK_SERVER_LOGGER.logEvent(
+                        new LogEntry()
+                                .setType(LogEntry.LogMessageType.EXCEPTION)
+                                .setLogLevel(Level.ERROR)
+                                .setMessageFormat("NumberFormatException converting " + integer + " to integer")
+                                .setThrowable(throwable)
+                );
+            }
+        }
+        return integerList;
     }
 
 }

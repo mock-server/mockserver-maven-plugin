@@ -7,8 +7,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockserver.client.NettyHttpClient;
 import org.mockserver.model.Header;
+import org.mockserver.model.Headers;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
+import org.mockserver.logging.MockServerLogger;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class InitializerMavenPluginTest {
     @BeforeClass
     public static void createClientAndEventLoopGroup() {
         clientEventLoopGroup = new NioEventLoopGroup();
-        httpClient = new NettyHttpClient(clientEventLoopGroup, null);
+        httpClient = new NettyHttpClient(new MockServerLogger(), clientEventLoopGroup, null);
     }
 
     @AfterClass
@@ -87,7 +89,7 @@ public class InitializerMavenPluginTest {
         );
     }
 
-    protected HttpResponse makeRequest(HttpRequest httpRequest, Collection<String> headersToIgnore) {
+    private HttpResponse makeRequest(HttpRequest httpRequest, Collection<String> headersToIgnore) {
         try {
             HttpResponse httpResponse = httpClient.sendRequest(httpRequest, new InetSocketAddress("localhost", SERVER_HTTP_PORT))
                     .get(30, TimeUnit.SECONDS);
@@ -97,7 +99,11 @@ public class InitializerMavenPluginTest {
                     headers.add(header);
                 }
             }
-            httpResponse.withHeaders(headers);
+            if (!headers.isEmpty()) {
+                httpResponse.withHeaders(headers);
+            } else {
+                httpResponse.withHeaders(new Headers());
+            }
             return httpResponse;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
