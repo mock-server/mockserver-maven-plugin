@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mockserver-maven-plugin</artifactId>
-    <version>5.7.1-SNAPSHOT</version>
+    <version>5.7.1</version>
     <packaging>maven-plugin</packaging>
 
     <name>MockServer Maven Plugin</name>
@@ -20,7 +20,7 @@
         <url>https://github.com/jamesdbloom/mockserver-maven-plugin.git</url>
         <connection>scm:git:https://github.com/jamesdbloom/mockserver-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jamesdbloom/mockserver-maven-plugin.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>mockserver-maven-plugin-5.7.1</tag>
     </scm>
 
     <properties>
