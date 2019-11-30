@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.mockserver.maven.InstanceHolder.runInitialization;
 
@@ -127,7 +128,7 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
                 getLog().error("Exception while starting MockServer", e);
             }
             if (getServerPorts() != null && getServerPorts().length > 0) {
-                boolean isRunning = new MockServerClient("localhost", getServerPorts()[0]).isRunning();
+                boolean isRunning = new MockServerClient("localhost", getServerPorts()[0]).isRunning(90, 500L, MILLISECONDS);
                 if (isRunning) {
                     getLog().info("mockserver:runForked MockServer is running on: "
                             + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
