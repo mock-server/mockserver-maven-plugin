@@ -127,7 +127,16 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
                 getLog().error("Exception while starting MockServer", e);
             }
             if (getServerPorts() != null && getServerPorts().length > 0) {
-                new MockServerClient("localhost", getServerPorts()[0]).isRunning();
+                boolean isRunning = new MockServerClient("localhost", getServerPorts()[0]).isRunning();
+                if (isRunning) {
+                    getLog().info("mockserver:runForked MockServer is running on: "
+                            + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
+                    );
+                } else {
+                    getLog().info("mockserver:runForked Timed out waiting for MockServer to run on: "
+                            + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
+                    );
+                }
             }
             runInitialization(getServerPorts(), createInitializerClass(), createInitializerJson());
         }
