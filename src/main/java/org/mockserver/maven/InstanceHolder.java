@@ -64,7 +64,13 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
 
     public void stop(final Integer[] mockServerPorts, boolean ignoreFailure) {
         if (mockServerPorts != null && mockServerPorts.length > 0) {
-            new MockServerClient("127.0.0.1", mockServerPorts[0]).stop(ignoreFailure);
+            try {
+                new MockServerClient("127.0.0.1", mockServerPorts[0]).stop(ignoreFailure).get();
+            } catch (Throwable throwable) {
+                if (!ignoreFailure) {
+                    throw new RuntimeException(throwable.getMessage(), throwable);
+                }
+            }
         }
     }
 
