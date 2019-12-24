@@ -48,7 +48,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      * for both mocking and proxying requests. Port unification is used
      * to support all protocols for proxying and mocking on the same port.
      */
-    @Parameter(property = "mockserver.serverPort", defaultValue = "")
+    @Parameter(property = "mockserver.serverPort")
     protected String serverPort = "";
 
     /**
@@ -66,7 +66,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
      * If no value is provided for proxyRemoteHost when proxyRemotePort
      * has been specified, proxyRemoteHost will default to \"localhost\".
      */
-    @Parameter(property = "mockserver.proxyRemoteHost", defaultValue = "")
+    @Parameter(property = "mockserver.proxyRemoteHost")
     protected String proxyRemoteHost = "";
 
     /**
@@ -140,11 +140,11 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
 
     Integer[] getServerPorts() {
         if (serverPorts == null && StringUtils.isNotEmpty(serverPort)) {
-            List<Integer> ports = new ArrayList<Integer>();
+            List<Integer> ports = new ArrayList<>();
             for (String port : Splitter.on(',').split(serverPort)) {
                 ports.add(Integer.parseInt(port));
             }
-            serverPorts = ports.toArray(new Integer[ports.size()]);
+            serverPorts = ports.toArray(new Integer[0]);
         }
         return serverPorts;
     }

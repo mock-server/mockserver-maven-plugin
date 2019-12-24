@@ -94,7 +94,7 @@
                     <properties>
                         <property>
                             <name>listener</name>
-                            <value>org.mockserver.test.PrintCurrentTestListener</value>
+                            <value>org.mockserver.test.PrintOutCurrentTestRunListener</value>
                         </property>
                     </properties>
                 </configuration>
@@ -113,7 +113,7 @@
                     <properties>
                         <property>
                             <name>listener</name>
-                            <value>org.mockserver.test.PrintCurrentTestListener</value>
+                            <value>org.mockserver.test.PrintOutCurrentTestRunListener</value>
                         </property>
                     </properties>
                 </configuration>

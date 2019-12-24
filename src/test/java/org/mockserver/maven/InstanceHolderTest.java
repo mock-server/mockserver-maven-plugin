@@ -16,7 +16,6 @@ import org.mockserver.model.HttpResponse;
 import org.mockserver.socket.PortFactory;
 import org.slf4j.event.Level;
 
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
@@ -68,7 +67,7 @@ public class InstanceHolderTest {
                     "");
 
             // then
-            assertThat(mockServerClient.isRunning(), is(true));
+            assertThat(mockServerClient.hasStarted(), is(true));
             assertThat(ConfigurationProperties.logLevel().toString(), is("DEBUG"));
         } finally {
             ConfigurationProperties.logLevel(originalLogLevel.toString());
@@ -103,7 +102,7 @@ public class InstanceHolderTest {
                             );
 
             // then
-            assertThat(mockServerClient.isRunning(), is(true));
+            assertThat(mockServerClient.hasStarted(), is(true));
             assertThat(response.getBodyAsString(), is("port_forwarded_response"));
         } finally {
             mockServerClient.stop();
@@ -137,7 +136,7 @@ public class InstanceHolderTest {
                             );
 
             // then
-            assertThat(mockServerClient.isRunning(), is(true));
+            assertThat(mockServerClient.hasStarted(), is(true));
             assertThat(response.getBodyAsString(), is("port_forwarded_response"));
         } finally {
             mockServerClient.stop();
@@ -145,7 +144,7 @@ public class InstanceHolderTest {
     }
 
     @Test
-    public void shouldPrintOutUsageForInvalidLogLevel() throws UnsupportedEncodingException {
+    public void shouldPrintOutUsageForInvalidLogLevel() {
         // given
         final int freePort = PortFactory.findFreePort();
 

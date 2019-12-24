@@ -5,7 +5,6 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.configuration.ConfigurationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +97,7 @@ public class StopMockServerTestListener extends RunListener {
     }
 
     @Override
-    public void testRunFinished(Result result) throws Exception {
+    public void testRunFinished(Result result) {
         if (!MockServerAbstractMojo.mockServerPort().isEmpty()) {
             logger.info("Stopping the MockServer in Listener");
             new MockServerClient("127.0.0.1", MockServerAbstractMojo.mockServerPort().get(0)).stop();

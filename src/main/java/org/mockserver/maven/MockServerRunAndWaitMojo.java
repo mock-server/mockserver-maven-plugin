@@ -4,6 +4,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.mockserver.configuration.ConfigurationProperties;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -14,11 +15,11 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * @author jamesdbloom
  */
-@Mojo(name = "run", requiresProject = false, threadSafe = false)
+@Mojo(name = "run", requiresProject = false)
 public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
 
     // used to simplify waiting logic
-    private SettableFuture settableFuture = SettableFuture.create();
+    private CompletableFuture<Object> settableFuture = new CompletableFuture<>();
 
     public void execute() {
         if (isNotBlank(logLevel)) {

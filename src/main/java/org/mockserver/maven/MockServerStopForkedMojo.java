@@ -15,7 +15,7 @@ import java.util.Arrays;
  *
  * @author jamesdbloom
  */
-@Mojo(name = "stopForked", requiresProject = false, threadSafe = false)
+@Mojo(name = "stopForked", requiresProject = false)
 public class MockServerStopForkedMojo extends MockServerAbstractMojo {
 
     public void execute() {

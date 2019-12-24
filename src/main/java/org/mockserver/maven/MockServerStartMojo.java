@@ -14,7 +14,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * @author jamesdbloom
  */
-@Mojo(name = "start", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresProject = true, inheritByDefault = true)
+@Mojo(name = "start", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class MockServerStartMojo extends MockServerAbstractMojo {
 
     /**

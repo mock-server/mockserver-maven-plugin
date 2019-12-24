@@ -1,20 +1,14 @@
 package org.mockserver.maven;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -118,7 +112,6 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.testClasspath = Collections.emptyList();
         mockServerRunForkedMojo.jvmOptions = "-Dfoo=bar";
         when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
-
 
         // when
         mockServerRunForkedMojo.execute();

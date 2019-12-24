@@ -1,6 +1,5 @@
 package org.mockserver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -27,7 +26,7 @@ public class MockServerStopMojoTest {
     }
 
     @Test
-    public void shouldStopMockServer() throws MojoExecutionException {
+    public void shouldStopMockServer() {
         // when
         mockServerStopMojo.execute();
 
@@ -36,7 +35,7 @@ public class MockServerStopMojoTest {
     }
 
     @Test
-    public void shouldSkipStoppingMockServer() throws MojoExecutionException {
+    public void shouldSkipStoppingMockServer() {
         // given
         mockServerStopMojo.skip = true;
 

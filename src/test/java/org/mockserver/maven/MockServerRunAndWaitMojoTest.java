@@ -1,11 +1,11 @@
 package org.mockserver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -21,7 +21,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class MockServerRunAndWaitMojoTest {
 
     @Mock
-    private SettableFuture<Object> objectSettableFuture;
+    private CompletableFuture<Object> objectSettableFuture;
     @Mock
     private InstanceHolder mockInstanceHolder;
     @InjectMocks
@@ -78,7 +78,7 @@ public class MockServerRunAndWaitMojoTest {
     }
 
     @Test
-    public void shouldSkipStoppingMockServer() throws MojoExecutionException {
+    public void shouldSkipStoppingMockServer() {
         // given
         mockServerRunAndWaitMojo.skip = true;
 

@@ -36,7 +36,7 @@ import static org.mockserver.maven.InstanceHolder.runInitialization;
  *
  * @author jamesdbloom
  */
-@Mojo(name = "runForked", requiresProject = false, threadSafe = false)
+@Mojo(name = "runForked", requiresProject = false)
 public class MockServerRunForkedMojo extends MockServerAbstractMojo {
 
     /**
@@ -128,8 +128,8 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
                 getLog().error("Exception while starting MockServer", e);
             }
             if (getServerPorts() != null && getServerPorts().length > 0) {
-                boolean isRunning = new MockServerClient("localhost", getServerPorts()[0]).isRunning(90, 500L, MILLISECONDS);
-                if (isRunning) {
+                boolean hasStarted = new MockServerClient("localhost", getServerPorts()[0]).hasStarted(90, 500L, MILLISECONDS);
+                if (hasStarted) {
                     getLog().info("mockserver:runForked MockServer is running on: "
                             + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")
                     );
