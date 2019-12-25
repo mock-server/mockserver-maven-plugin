@@ -52,6 +52,8 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
     protected RepositorySystem repositorySystem;
     private ProcessBuildFactory processBuildFactory = new ProcessBuildFactory();
 
+    private MockServerClient mockServerClient = getServerPorts() != null && getServerPorts().length > 0 ? new MockServerClient("localhost", getServerPorts()[0]) : null;
+
     private static String fileSeparators(String path) {
         StringBuilder ret = new StringBuilder();
         for (char c : path.toCharArray()) {
@@ -128,7 +130,10 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
                 getLog().error("Exception while starting MockServer", e);
             }
             if (getServerPorts() != null && getServerPorts().length > 0) {
-                boolean hasStarted = new MockServerClient("localhost", getServerPorts()[0]).hasStarted(90, 500L, MILLISECONDS);
+                if (mockServerClient == null) {
+                    mockServerClient = new MockServerClient("localhost", getServerPorts()[0]);
+                }
+                boolean hasStarted = mockServerClient.hasStarted(150, 500L, MILLISECONDS);
                 if (hasStarted) {
                     getLog().info("mockserver:runForked MockServer is running on: "
                             + (getServerPorts() != null ? " serverPort " + Arrays.toString(getServerPorts()) : "")

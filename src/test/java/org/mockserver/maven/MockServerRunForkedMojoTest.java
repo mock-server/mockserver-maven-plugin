@@ -6,9 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockserver.client.MockServerClient;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -25,6 +27,8 @@ public class MockServerRunForkedMojoTest {
     private RepositorySystem mockRepositorySystem;
     @Mock
     private ProcessBuildFactory mockProcessBuildFactory;
+    @Mock
+    private MockServerClient mockServerClient;
     @InjectMocks
     private MockServerRunForkedMojo mockServerRunForkedMojo;
     private ProcessBuilder processBuilder;
@@ -40,6 +44,7 @@ public class MockServerRunForkedMojoTest {
         initMocks(this);
 
         when(mockRepositorySystem.createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "jar-with-dependencies")).thenReturn(mockArtifact);
+        when(mockServerClient.hasStarted(anyInt(), anyLong(), any(TimeUnit.class))).thenReturn(true);
     }
 
     @Test
@@ -65,6 +70,7 @@ public class MockServerRunForkedMojoTest {
                 "-serverPort", "1,2",
                 "-logLevel", "LEVEL"
         ));
+        verify(mockServerClient).hasStarted(anyInt(), anyLong(), any(TimeUnit.class));
         assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectError());
         assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectOutput());
     }
@@ -96,6 +102,7 @@ public class MockServerRunForkedMojoTest {
                 "-proxyRemoteHost", "remoteHost",
                 "-logLevel", "LEVEL"
         ));
+        verify(mockServerClient).hasStarted(anyInt(), anyLong(), any(TimeUnit.class));
         assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectError());
         assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectOutput());
     }
@@ -125,6 +132,7 @@ public class MockServerRunForkedMojoTest {
                 "-serverPort", "1,2",
                 "-logLevel", "INFO"
         ));
+        verify(mockServerClient).hasStarted(anyInt(), anyLong(), any(TimeUnit.class));
         assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectError());
         assertEquals(ProcessBuilder.Redirect.INHERIT, processBuilder.redirectOutput());
         assertNotNull(ExampleInitializationClass.mockServerClient);
@@ -147,6 +155,7 @@ public class MockServerRunForkedMojoTest {
     @Test
     public void shouldRunMockServerForkedAndNotPipeToConsole() {
         // given
+        mockServerRunForkedMojo.serverPort = "1,2";
         mockServerRunForkedMojo.pipeLogToConsole = false;
         when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
 
@@ -155,6 +164,7 @@ public class MockServerRunForkedMojoTest {
 
         // then
         verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "jar-with-dependencies");
+        verify(mockServerClient).hasStarted(anyInt(), anyLong(), any(TimeUnit.class));
         assertFalse(processBuilder.redirectErrorStream());
     }
 
@@ -170,6 +180,7 @@ public class MockServerRunForkedMojoTest {
         // when
         mockServerRunForkedMojo.execute();
 
+        verify(mockServerClient).hasStarted(anyInt(), anyLong(), any(TimeUnit.class));
         assertNull(ExampleInitializationClass.mockServerClient);
     }
 
