@@ -2,9 +2,6 @@ package org.mockserver;
 
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.configuration.ConfigurationProperties;
-
-import javax.naming.Context;
 
 /**
  * @author jamesdbloom

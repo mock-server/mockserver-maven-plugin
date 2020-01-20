@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 
 /**
- * Stop the a forked instance of the MockServer
+ * Stop a forked instance of the MockServer
  *
  * To run from command line:
  *

@@ -1,11 +1,9 @@
 package org.mockserver;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.echo.http.EchoServer;
-import org.mockserver.integration.server.AbstractBasicMockingIntegrationTest;
+import org.mockserver.testing.integration.mock.AbstractBasicMockingIntegrationTest;
 
 /**
  * @author jamesdbloom
@@ -15,7 +13,7 @@ public class ClientServerMavenPluginTest extends AbstractBasicMockingIntegration
     private final static int SERVER_HTTP_PORT = 1084;
 
     @BeforeClass
-    public static void createClient() throws Exception {
+    public static void createClient() {
         mockServerClient = new MockServerClient("localhost", SERVER_HTTP_PORT, servletContext);
     }
 

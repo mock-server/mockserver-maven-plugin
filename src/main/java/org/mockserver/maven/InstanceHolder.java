@@ -2,12 +2,12 @@ package org.mockserver.maven;
 
 import com.google.common.base.Strings;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.client.initialize.ExpectationInitializer;
+import org.mockserver.client.initialize.PluginExpectationInitializer;
 import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.logging.MockServerLogger;
 import org.mockserver.mock.Expectation;
-import org.mockserver.mockserver.MockServer;
 import org.mockserver.model.ObjectWithReflectiveEqualsHashCodeToString;
+import org.mockserver.netty.MockServer;
 import org.mockserver.serialization.ExpectationSerializer;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -20,7 +20,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
 
     private MockServer mockServer;
 
-    public static void runInitialization(Integer[] mockServerPorts, ExpectationInitializer expectationClassInitializer, String expectationJsonInitializer) {
+    public static void runInitialization(Integer[] mockServerPorts, PluginExpectationInitializer expectationClassInitializer, String expectationJsonInitializer) {
         if (mockServerPorts != null && mockServerPorts.length > 0) {
             if (expectationClassInitializer != null) {
                 expectationClassInitializer
@@ -29,7 +29,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
                         );
             }
             if (isNotBlank(expectationJsonInitializer)) {
-                Expectation[] expectations = new ExpectationSerializer(new MockServerLogger()).deserializeArray(expectationJsonInitializer);
+                Expectation[] expectations = new ExpectationSerializer(new MockServerLogger()).deserializeArray(expectationJsonInitializer, false);
                 new MockServerClient("127.0.0.1", mockServerPorts[0]).sendExpectation(expectations);
             }
         }
@@ -39,7 +39,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
                       final Integer proxyRemotePort,
                       String proxyRemoteHost,
                       final String logLevel,
-                      ExpectationInitializer expectationClassInitializer,
+                      PluginExpectationInitializer expectationClassInitializer,
                       String expectationJsonInitializer) {
         if (mockServer == null || !mockServer.isRunning()) {
             if (logLevel != null) {
@@ -65,7 +65,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
     public void stop(final Integer[] mockServerPorts, boolean ignoreFailure) {
         if (mockServerPorts != null && mockServerPorts.length > 0) {
             try {
-                new MockServerClient("127.0.0.1", mockServerPorts[0]).stop(ignoreFailure).get();
+                new MockServerClient("127.0.0.1", mockServerPorts[0]).stop(ignoreFailure).get().hasStopped();
             } catch (Throwable throwable) {
                 if (!ignoreFailure) {
                     throw new RuntimeException(throwable.getMessage(), throwable);

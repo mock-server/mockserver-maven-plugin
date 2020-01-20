@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.echo.http.EchoServer;
-import org.mockserver.integration.proxy.AbstractClientProxyIntegrationTest;
+import org.mockserver.testing.integration.proxy.AbstractClientProxyIntegrationTest;
 
 /**
  * @author jamesdbloom
@@ -37,6 +37,11 @@ public class ClientProxyMavenPluginTest extends AbstractClientProxyIntegrationTe
     @Override
     public int getProxyPort() {
         return SERVER_HTTP_PORT;
+    }
+
+    @Override
+    public int getSecureProxyPort() {
+        return getProxyPort();
     }
 
     @Override

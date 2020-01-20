@@ -1,7 +1,7 @@
 package org.mockserver;
 
 import org.mockserver.client.MockServerClient;
-import org.mockserver.client.initialize.ExpectationInitializer;
+import org.mockserver.client.initialize.PluginExpectationInitializer;
 
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -9,7 +9,7 @@ import static org.mockserver.model.HttpResponse.response;
 /**
  * @author jamesdbloom
  */
-public class TestClasspathInitializationClass implements ExpectationInitializer {
+public class TestClasspathInitializationClass implements PluginExpectationInitializer {
 
     @Override
     public void initializeExpectations(MockServerClient mockServerClient) {

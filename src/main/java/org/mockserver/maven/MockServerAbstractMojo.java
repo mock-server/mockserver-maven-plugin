@@ -7,7 +7,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.mockserver.client.initialize.ExpectationInitializer;
+import org.mockserver.client.initialize.PluginExpectationInitializer;
 import org.mockserver.configuration.IntegerStringListParser;
 import org.mockserver.log.model.LogEntry;
 import org.mockserver.logging.MockServerLogger;
@@ -96,7 +96,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
 
     /**
      * To enable the creation of default expectations that are generic across all tests or mocking scenarios a class can be specified
-     * to initialize expectations in the MockServer, this class must implement org.mockserver.initialize.ExpectationInitializer interface,
+     * to initialize expectations in the MockServer, this class must implement org.mockserver.initialize.PluginExpectationInitializer interface,
      * the initializeExpectations(MockServerClient mockServerClient) method will be called once the MockServer has been started (but ONLY
      * if serverPort has been set), however it should be noted that it is generally better practice to create all expectations locally in
      * each test (or test class) for clarity, simplicity and to avoid brittle tests
@@ -157,21 +157,30 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
         return instanceHolder;
     }
 
-    protected ExpectationInitializer createInitializerClass() {
+    protected PluginExpectationInitializer createInitializerClass() {
         try {
             ClassLoader contextClassLoader = setupClasspath();
+            if (contextClassLoader == null) {
+                contextClassLoader = this.getClass().getClassLoader();
+            }
             if (isNotBlank(initializationClass) && contextClassLoader != null) {
                 Class<?> loadedClass = contextClassLoader.loadClass(initializationClass);
                 if (loadedClass != null) {
                     Constructor<?> initializerClassConstructor = loadedClass.getDeclaredConstructor();
-                    Object expectationInitializer = initializerClassConstructor.newInstance();
-                    if (expectationInitializer instanceof ExpectationInitializer) {
-                        return (ExpectationInitializer) expectationInitializer;
+                    Object PluginExpectationInitializer = initializerClassConstructor.newInstance();
+                    if (PluginExpectationInitializer instanceof PluginExpectationInitializer) {
+                        return (PluginExpectationInitializer) PluginExpectationInitializer;
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Throwable throwable) {
+            MOCK_SERVER_LOGGER.logEvent(
+                    new LogEntry()
+                            .setType(LogEntry.LogMessageType.EXCEPTION)
+                            .setLogLevel(Level.ERROR)
+                            .setMessageFormat("Exception loading class expectation initializer")
+                            .setThrowable(throwable)
+            );
         }
         return null;
     }
@@ -185,8 +194,14 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
                     return readFileFromClassPathOrPath(testResourcePath + "/" + initializationJson);
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Throwable throwable) {
+            MOCK_SERVER_LOGGER.logEvent(
+                    new LogEntry()
+                            .setType(LogEntry.LogMessageType.EXCEPTION)
+                            .setLogLevel(Level.ERROR)
+                            .setMessageFormat("Exception loading json expectation initializer")
+                            .setThrowable(throwable)
+            );
         }
         return "";
     }
