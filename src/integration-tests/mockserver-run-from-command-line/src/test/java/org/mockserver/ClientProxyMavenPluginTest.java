@@ -18,7 +18,7 @@ public class ClientProxyMavenPluginTest extends AbstractClientProxyIntegrationTe
 
     @BeforeClass
     public static void startServer() {
-        echoServer = new EchoServer(false);
+        echoServer = new EchoServer(false, false);
         mockServerClient = new MockServerClient("localhost", SERVER_HTTP_PORT, servletContext);
     }
 

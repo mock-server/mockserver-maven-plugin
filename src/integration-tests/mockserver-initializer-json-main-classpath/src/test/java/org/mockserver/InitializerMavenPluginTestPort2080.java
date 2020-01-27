@@ -47,7 +47,7 @@ public class InitializerMavenPluginTestPort2080 {
     @BeforeClass
     public static void createClientAndEventLoopGroup() {
         clientEventLoopGroup = new NioEventLoopGroup();
-        httpClient = new NettyHttpClient(new MockServerLogger(), clientEventLoopGroup, null);
+        httpClient = new NettyHttpClient(new MockServerLogger(), clientEventLoopGroup, null, false);
     }
 
     @AfterClass
