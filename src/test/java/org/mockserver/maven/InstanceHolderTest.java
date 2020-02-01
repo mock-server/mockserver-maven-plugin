@@ -81,7 +81,7 @@ public class InstanceHolderTest {
         final int freePort = PortFactory.findFreePort();
         MockServerClient mockServerClient = new MockServerClient("127.0.0.1", freePort);
         try {
-            EchoServer echoServer = new EchoServer(false, false);
+            EchoServer echoServer = new EchoServer(false);
             echoServer.withNextResponse(response("port_forwarded_response"));
 
             // when
@@ -115,7 +115,7 @@ public class InstanceHolderTest {
         final int freePort = PortFactory.findFreePort();
         MockServerClient mockServerClient = new MockServerClient("127.0.0.1", freePort);
         try {
-            EchoServer echoServer = new EchoServer(false, false);
+            EchoServer echoServer = new EchoServer(false);
             echoServer.withNextResponse(response("port_forwarded_response"));
 
             // when

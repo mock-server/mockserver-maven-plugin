@@ -5,12 +5,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.echo.http.EchoServer;
-import org.mockserver.testing.integration.proxy.AbstractClientProxyIntegrationTest;
+import org.mockserver.testing.integration.proxy.AbstractProxyIntegrationTest;
 
 /**
  * @author jamesdbloom
  */
-public class ClientProxyMavenPluginTest extends AbstractClientProxyIntegrationTest {
+public class ClientProxyMavenPluginTest extends AbstractProxyIntegrationTest {
 
     private final static int SERVER_HTTP_PORT = 1084;
     private static EchoServer echoServer;
@@ -18,7 +18,7 @@ public class ClientProxyMavenPluginTest extends AbstractClientProxyIntegrationTe
 
     @BeforeClass
     public static void startServer() {
-        echoServer = new EchoServer(false, false);
+        echoServer = new EchoServer(false);
         mockServerClient = new MockServerClient("localhost", SERVER_HTTP_PORT, servletContext);
     }
 
