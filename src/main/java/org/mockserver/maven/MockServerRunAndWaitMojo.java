@@ -1,7 +1,7 @@
 package org.mockserver.maven;
 
 import org.apache.maven.plugins.annotations.Mojo;
-import org.mockserver.client.initialize.PluginExpectationInitializer;
+import org.mockserver.client.initialize.ExpectationInitializer;
 import org.mockserver.configuration.ConfigurationProperties;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
                 );
             }
             try {
-                PluginExpectationInitializer initializerClass = createInitializerClass();
+                ExpectationInitializer initializerClass = createInitializerClass();
                 String initializerJson = createInitializerJson();
                 if (timeout != null && timeout > 0) {
                     getLocalMockServerInstance().start(getServerPorts(), proxyRemotePort, proxyRemoteHost, logLevel, initializerClass, initializerJson);

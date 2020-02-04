@@ -2,7 +2,7 @@ package org.mockserver.maven;
 
 import com.google.common.base.Strings;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.client.initialize.PluginExpectationInitializer;
+import org.mockserver.client.initialize.ExpectationInitializer;
 import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.logging.MockServerLogger;
 import org.mockserver.mock.Expectation;
@@ -20,7 +20,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
 
     private MockServer mockServer;
 
-    public static void runInitialization(Integer[] mockServerPorts, PluginExpectationInitializer expectationClassInitializer, String expectationJsonInitializer) {
+    public static void runInitialization(Integer[] mockServerPorts, ExpectationInitializer expectationClassInitializer, String expectationJsonInitializer) {
         if (mockServerPorts != null && mockServerPorts.length > 0) {
             if (expectationClassInitializer != null) {
                 expectationClassInitializer
@@ -39,7 +39,7 @@ public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
                       final Integer proxyRemotePort,
                       String proxyRemoteHost,
                       final String logLevel,
-                      PluginExpectationInitializer expectationClassInitializer,
+                      ExpectationInitializer expectationClassInitializer,
                       String expectationJsonInitializer) {
         if (mockServer == null || !mockServer.isRunning()) {
             if (logLevel != null) {

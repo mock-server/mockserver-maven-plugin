@@ -7,7 +7,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.mockserver.client.initialize.PluginExpectationInitializer;
+import org.mockserver.client.initialize.ExpectationInitializer;
 import org.mockserver.configuration.IntegerStringListParser;
 import org.mockserver.log.model.LogEntry;
 import org.mockserver.logging.MockServerLogger;
@@ -157,7 +157,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
         return instanceHolder;
     }
 
-    protected PluginExpectationInitializer createInitializerClass() {
+    protected ExpectationInitializer createInitializerClass() {
         try {
             ClassLoader contextClassLoader = setupClasspath();
             if (contextClassLoader == null) {
@@ -167,9 +167,9 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
                 Class<?> loadedClass = contextClassLoader.loadClass(initializationClass);
                 if (loadedClass != null) {
                     Constructor<?> initializerClassConstructor = loadedClass.getDeclaredConstructor();
-                    Object PluginExpectationInitializer = initializerClassConstructor.newInstance();
-                    if (PluginExpectationInitializer instanceof PluginExpectationInitializer) {
-                        return (PluginExpectationInitializer) PluginExpectationInitializer;
+                    Object pluginExpectationInitializer = initializerClassConstructor.newInstance();
+                    if (pluginExpectationInitializer instanceof ExpectationInitializer) {
+                        return (ExpectationInitializer) pluginExpectationInitializer;
                     }
                 }
             }
