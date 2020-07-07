@@ -65,7 +65,7 @@
                 <configuration>
                     <logLevel>INFO</logLevel>
                     <serverPort>1086,2086</serverPort>
-                    <pipeLogToConsole>false</pipeLogToConsole>
+                    <pipeLogToConsole>true</pipeLogToConsole>
                 </configuration>
                 <dependencies>
                     <dependency>
