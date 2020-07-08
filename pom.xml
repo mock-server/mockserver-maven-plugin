@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver</artifactId>
-        <version>5.10.1-SNAPSHOT</version>
+        <version>5.11.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -67,7 +67,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>mockserver-netty</artifactId>
             <classifier>jar-with-dependencies</classifier>
-            <version>5.10.1-SNAPSHOT</version>
+            <version>5.11.0</version>
             <scope>compile</scope>
         </dependency>
 
