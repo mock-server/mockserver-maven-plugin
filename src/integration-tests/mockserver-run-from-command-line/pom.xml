@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>24.1.1</version>
+            <version>29.0-android</version>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
