@@ -21,7 +21,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
 
     // used to simplify waiting logic
-    private final CompletableFuture<Object> settableFuture = new CompletableFuture<>();
+    @SuppressWarnings("FieldMayBeFinal")
+    private CompletableFuture<Object> settableFuture = new CompletableFuture<>();
 
     public void execute() {
         if (isNotBlank(logLevel)) {
