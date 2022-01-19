@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 /**
  * @author jamesdbloom
@@ -41,7 +41,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo = new MockServerRunForkedMojo();
         javaBinaryPath = mockServerRunForkedMojo.getJavaBin();
 
-        initMocks(this);
+        openMocks(this);
 
         when(mockRepositorySystem.createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "jar-with-dependencies")).thenReturn(mockArtifact);
         when(mockServerClient.hasStarted(anyInt(), anyLong(), any(TimeUnit.class))).thenReturn(true);
@@ -54,7 +54,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.logLevel = "LEVEL";
         mockServerRunForkedMojo.pipeLogToConsole = true;
         mockServerRunForkedMojo.jvmOptions = "-Dfoo=bar";
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
+        when(mockProcessBuildFactory.create(anyList())).thenReturn(processBuilder);
 
 
         // when
@@ -84,7 +84,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.logLevel = "LEVEL";
         mockServerRunForkedMojo.pipeLogToConsole = true;
         mockServerRunForkedMojo.jvmOptions = "-Dfoo=bar";
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
+        when(mockProcessBuildFactory.create(anyList())).thenReturn(processBuilder);
 
 
         // when
@@ -118,7 +118,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.compileClasspath = Collections.singletonList(ExampleInitializationClass.class.getClassLoader().getResource(classLocation).getFile().replaceAll(classLocation, ""));
         mockServerRunForkedMojo.testClasspath = Collections.emptyList();
         mockServerRunForkedMojo.jvmOptions = "-Dfoo=bar";
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
+        when(mockProcessBuildFactory.create(anyList())).thenReturn(processBuilder);
 
         // when
         mockServerRunForkedMojo.execute();
@@ -141,7 +141,7 @@ public class MockServerRunForkedMojoTest {
     @Test
     public void shouldHandleProcessException() {
         // given
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(new ProcessBuilder("TEST FAIL"));
+        when(mockProcessBuildFactory.create(anyList())).thenReturn(new ProcessBuilder("TEST FAIL"));
 
         // when
         try {
@@ -157,7 +157,7 @@ public class MockServerRunForkedMojoTest {
         // given
         mockServerRunForkedMojo.serverPort = "1,2";
         mockServerRunForkedMojo.pipeLogToConsole = false;
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
+        when(mockProcessBuildFactory.create(anyList())).thenReturn(processBuilder);
 
         // when
         mockServerRunForkedMojo.execute();
@@ -175,7 +175,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.serverPort = "1,2";
         mockServerRunForkedMojo.pipeLogToConsole = true;
         mockServerRunForkedMojo.initializationClass = "org.mockserver.maven.InvalidClassName";
-        when(mockProcessBuildFactory.create(anyListOf(String.class))).thenReturn(processBuilder);
+        when(mockProcessBuildFactory.create(anyList())).thenReturn(processBuilder);
 
         // when
         mockServerRunForkedMojo.execute();
@@ -193,6 +193,6 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.execute();
 
         // then
-        verify(mockProcessBuildFactory, times(0)).create(anyListOf(String.class));
+        verify(mockProcessBuildFactory, times(0)).create(anyList());
     }
 }

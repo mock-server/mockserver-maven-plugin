@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 /**
  * @author jamesdbloom
@@ -20,7 +20,7 @@ public class MockServerStopForkedMojoTest {
 
     @Before
     public void setupMocks() {
-        initMocks(this);
+        openMocks(this);
         MockServerAbstractMojo.instanceHolder = mockInstanceHolder;
     }
 

@@ -14,7 +14,7 @@
 
     <name>MockServer Maven Plugin</name>
     <description>A maven plugin to start and stop the MockServer</description>
-    <url>http://www.mock-server.com</url>
+    <url>https://www.mock-server.com</url>
 
     <scm>
         <url>https://github.com/mock-server/mockserver-maven-plugin.git</url>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.6.0</version>
+            <version>3.6.2</version>
         </dependency>
 
         <!-- test -->
@@ -92,10 +92,12 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

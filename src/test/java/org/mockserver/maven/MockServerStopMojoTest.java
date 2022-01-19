@@ -7,7 +7,7 @@ import org.mockito.Mock;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 /**
  * @author jamesdbloom
@@ -21,7 +21,7 @@ public class MockServerStopMojoTest {
 
     @Before
     public void setupMocks() {
-        initMocks(this);
+        openMocks(this);
         MockServerAbstractMojo.instanceHolder = mockEmbeddedJettyHolder;
     }
 

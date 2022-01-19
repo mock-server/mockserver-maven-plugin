@@ -16,11 +16,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * @author jamesdbloom
  */
+@SuppressWarnings("deprecation")
 @Mojo(name = "run", requiresProject = false)
 public class MockServerRunAndWaitMojo extends MockServerAbstractMojo {
 
     // used to simplify waiting logic
-    private CompletableFuture<Object> settableFuture = new CompletableFuture<>();
+    private final CompletableFuture<Object> settableFuture = new CompletableFuture<>();
 
     public void execute() {
         if (isNotBlank(logLevel)) {

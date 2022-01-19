@@ -34,6 +34,7 @@ import static org.mockserver.file.FileReader.readFileFromClassPathOrPath;
  * @requiresDependencyCollection test
  * @requiresDependencyResolution test
  */
+@SuppressWarnings("deprecation")
 public abstract class MockServerAbstractMojo extends AbstractMojo {
 
     private static final MockServerLogger MOCK_SERVER_LOGGER = new MockServerLogger();

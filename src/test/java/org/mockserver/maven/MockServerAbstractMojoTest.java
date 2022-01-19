@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 /**
  * @author jamesdbloom
@@ -27,7 +27,7 @@ public class MockServerAbstractMojoTest {
                 throw new UnsupportedOperationException("method not implemented yet");
             }
         };
-        initMocks(this);
+        openMocks(this);
         MockServerAbstractMojo.instanceHolder = mockEmbeddedJettyHolder;
     }
 

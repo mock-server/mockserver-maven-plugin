@@ -16,6 +16,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * @author jamesdbloom
  */
+@SuppressWarnings("deprecation")
 public class InstanceHolder extends ObjectWithReflectiveEqualsHashCodeToString {
 
     private MockServer mockServer;

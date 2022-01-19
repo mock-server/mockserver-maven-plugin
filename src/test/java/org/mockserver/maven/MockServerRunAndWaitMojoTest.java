@@ -10,10 +10,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 /**
  * @author jamesdbloom
@@ -29,7 +27,7 @@ public class MockServerRunAndWaitMojoTest {
 
     @Before
     public void setupMocks() {
-        initMocks(this);
+        openMocks(this);
 
         MockServerAbstractMojo.instanceHolder = mockInstanceHolder;
     }

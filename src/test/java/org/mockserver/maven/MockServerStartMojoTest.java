@@ -2,14 +2,15 @@ package org.mockserver.maven;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 /**
  * @author jamesdbloom
@@ -23,7 +24,7 @@ public class MockServerStartMojoTest {
 
     @Before
     public void setupMocks() {
-        initMocks(this);
+        openMocks(this);
         MockServerAbstractMojo.instanceHolder = mockInstanceHolder;
     }
 
