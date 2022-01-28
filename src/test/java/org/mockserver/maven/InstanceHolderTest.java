@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.client.NettyHttpClient;
+import org.mockserver.httpclient.NettyHttpClient;
 import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.echo.http.EchoServer;
 import org.mockserver.logging.MockServerLogger;
@@ -30,6 +30,7 @@ import static org.mockserver.model.HttpResponse.response;
 /**
  * @author jamesdbloom
  */
+@SuppressWarnings("deprecation")
 public class InstanceHolderTest {
 
     @Rule

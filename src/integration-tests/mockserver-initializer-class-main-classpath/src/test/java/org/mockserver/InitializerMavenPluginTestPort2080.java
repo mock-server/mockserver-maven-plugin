@@ -5,7 +5,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockserver.client.NettyHttpClient;
+import org.mockserver.httpclient.NettyHttpClient;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
