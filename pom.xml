@@ -27,9 +27,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
-        <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
-        <maven-version>3.1.1</maven-version>
         <maven-invoker-parallel-threads>1</maven-invoker-parallel-threads>
+        <maven-plugin.version>3.8.4</maven-plugin.version>
     </properties>
 
     <repositories>
@@ -61,6 +60,51 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.maven.resolver</groupId>
+                <artifactId>maven-resolver-util</artifactId>
+                <version>1.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.resolver</groupId>
+                <artifactId>maven-resolver-api</artifactId>
+                <version>1.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.shared</groupId>
+                <artifactId>maven-shared-utils</artifactId>
+                <version>3.3.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-component-annotations</artifactId>
+                <version>2.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>3.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-classworlds</artifactId>
+                <version>2.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.sisu</groupId>
+                <artifactId>org.eclipse.sisu.inject</artifactId>
+                <version>0.3.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>4.2.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- mockserver -->
         <dependency>
@@ -75,60 +119,95 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-settings</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-settings-builder</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-repository-metadata</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model-builder</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>3.0</version>
+            <version>${maven-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-artifact-transfer</artifactId>
             <version>0.13.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-model</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-settings</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-settings-builder</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-repository-metadata</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-plugin-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-model-builder</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-artifact</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>3.6.4</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- test -->
