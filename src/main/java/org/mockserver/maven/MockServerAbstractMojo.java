@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -230,42 +229,8 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
         return null;
     }
 
-    public static List<Integer> mockServerPort() {
-        final String mockServerPort = System.getProperty("mockserver.mockServerPort");
-        try {
-            return toList(mockServerPort);
-        } catch (NumberFormatException nfe) {
-            MOCK_SERVER_LOGGER.logEvent(
-                    new LogEntry()
-                            .setType(LogEntry.LogMessageType.EXCEPTION)
-                            .setLogLevel(Level.ERROR)
-                            .setMessageFormat("NumberFormatException converting " + "mockserver.mockServerPort" + " with value [" + mockServerPort + "]")
-                            .setThrowable(nfe)
-            );
-            return Collections.emptyList();
-        }
-    }
-
     public static void mockServerPort(Integer... port) {
         System.setProperty("mockserver.mockServerPort", new IntegerStringListParser().toString(port));
-    }
-
-    private static List<Integer> toList(String integers) {
-        List<Integer> integerList = new ArrayList<>();
-        for (String integer : Splitter.on(",").split(integers)) {
-            try {
-                integerList.add(Integer.parseInt(integer.trim()));
-            } catch (NumberFormatException throwable) {
-                MOCK_SERVER_LOGGER.logEvent(
-                        new LogEntry()
-                                .setType(LogEntry.LogMessageType.EXCEPTION)
-                                .setLogLevel(Level.ERROR)
-                                .setMessageFormat("NumberFormatException converting " + integer + " to integer")
-                                .setThrowable(throwable)
-                );
-            }
-        }
-        return integerList;
     }
 
 }

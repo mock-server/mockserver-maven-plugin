@@ -98,9 +98,9 @@ public class StopMockServerTestListener extends RunListener {
 
     @Override
     public void testRunFinished(Result result) {
-        if (!MockServerAbstractMojo.mockServerPort().isEmpty()) {
+        if (!MockServerPort.mockServerPort().isEmpty()) {
             logger.info("Stopping the MockServer in Listener");
-            new MockServerClient("127.0.0.1", MockServerAbstractMojo.mockServerPort().get(0)).stop();
+            new MockServerClient("127.0.0.1", MockServerPort.mockServerPort().get(0)).stop();
 
             try {
                 // ensure that shutdown has actually completed and won't
