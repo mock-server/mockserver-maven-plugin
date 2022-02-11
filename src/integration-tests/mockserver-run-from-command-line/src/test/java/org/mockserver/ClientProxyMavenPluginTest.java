@@ -40,11 +40,6 @@ public class ClientProxyMavenPluginTest extends AbstractProxyIntegrationTest {
     }
 
     @Override
-    public int getSecureProxyPort() {
-        return getProxyPort();
-    }
-
-    @Override
     public MockServerClient getMockServerClient() {
         return mockServerClient;
     }
@@ -52,6 +47,11 @@ public class ClientProxyMavenPluginTest extends AbstractProxyIntegrationTest {
     @Override
     public int getServerPort() {
         return echoServer.getPort();
+    }
+
+    @Override
+    public EchoServer getEchoServer() {
+        return echoServer;
     }
 
 }
