@@ -110,7 +110,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mockserver-netty</artifactId>
-            <classifier>jar-with-dependencies</classifier>
+            <classifier>shaded</classifier>
+            <version>5.12.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mockserver-integration-testing</artifactId>
             <version>5.12.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.mockserver.model.HttpStatusCode.OK_200;
+import static org.mockserver.configuration.Configuration.configuration;
 
 /**
  * @author jamesdbloom
@@ -47,7 +48,7 @@ public class InitializerMavenPluginTestPort1080 {
     @BeforeClass
     public static void createClientAndEventLoopGroup() {
         clientEventLoopGroup = new NioEventLoopGroup();
-        httpClient = new NettyHttpClient(new MockServerLogger(), clientEventLoopGroup, null, false);
+        httpClient = new NettyHttpClient(configuration(), new MockServerLogger(), clientEventLoopGroup, null, false);
     }
 
     @AfterClass

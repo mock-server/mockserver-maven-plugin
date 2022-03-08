@@ -24,4 +24,5 @@ public class MainClasspathInitializationClass implements PluginExpectationInitia
                                 .withBody("test_initializer_response_body")
                 );
     }
+
 }
