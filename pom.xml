@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.mock-server</groupId>
         <artifactId>mockserver</artifactId>
-        <version>5.12.1-SNAPSHOT</version>
+        <version>5.13.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -111,13 +111,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>mockserver-netty</artifactId>
             <classifier>shaded</classifier>
-            <version>5.12.1-SNAPSHOT</version>
+            <version>5.13.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mockserver-integration-testing</artifactId>
-            <version>5.12.1-SNAPSHOT</version>
+            <version>5.13.0</version>
             <scope>compile</scope>
         </dependency>
 
