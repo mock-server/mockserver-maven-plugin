@@ -11,6 +11,7 @@ import org.mockserver.client.initialize.ExpectationInitializer;
 import org.mockserver.configuration.IntegerStringListParser;
 import org.mockserver.log.model.LogEntry;
 import org.mockserver.logging.MockServerLogger;
+import org.mockserver.mock.action.http.HttpResponseClassCallbackActionHandler;
 import org.slf4j.event.Level;
 
 import java.io.File;
@@ -160,6 +161,7 @@ public abstract class MockServerAbstractMojo extends AbstractMojo {
     protected ExpectationInitializer createInitializerClass() {
         try {
             ClassLoader contextClassLoader = setupClasspath();
+            HttpResponseClassCallbackActionHandler.setContextClassLoader(contextClassLoader);
             if (contextClassLoader == null) {
                 contextClassLoader = this.getClass().getClassLoader();
             }
