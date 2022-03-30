@@ -275,6 +275,96 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- copy dependency-reduced-pom.xml to target folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <!--source -->
+                                            <directory>./</directory>
+                                            <filtering>true</filtering>
+                                            <includes>
+                                                <include>dependency-reduced-pom.xml</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                    <!--target -->
+                                    <outputDirectory>target</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- update version in dependency-reduced-pom.xml in target directory -->
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.3</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <basedir>target</basedir>
+                            <includes>
+                                <include>dependency-reduced-pom.xml</include>
+                            </includes>
+                            <replacements>
+                                <replacement>
+                                    <token>@project.version</token>
+                                    <value>${project.version}}</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </plugin>
+                    <!-- deploy shaded plugin to remote repository -->
+                    <plugin>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy-shaded-artefact</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <repositoryId>ossrh</repositoryId>
+                                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                                    <file>${project.build.directory}/${project.artifactId}-${project.version}-shaded.jar</file>
+                                    <generatePom>false</generatePom>
+                                    <pomFile>dependency-reduced-pom.xml</pomFile>
+                                    <artifactId>${project.artifactId}-no-dependencies</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <version>${project.version}</version>
+                                    <packaging>${project.packaging}</packaging>
+                                    <sources>${project.build.directory}/${project.artifactId}-${project.version}-sources.jar</sources>
+                                    <javadoc>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</javadoc>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -649,98 +739,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <!-- copy dependency-reduced-pom.xml to target folder -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <overwrite>true</overwrite>
-                                    <resources>
-                                        <resource>
-                                            <!--source -->
-                                            <directory>./</directory>
-                                            <filtering>true</filtering>
-                                            <includes>
-                                                <include>dependency-reduced-pom.xml</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                    <!--target -->
-                                    <outputDirectory>target</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- update version in dependency-reduced-pom.xml in target directory -->
-                    <plugin>
-                        <groupId>com.google.code.maven-replacer-plugin</groupId>
-                        <artifactId>replacer</artifactId>
-                        <version>1.5.3</version>
-                        <executions>
-                            <execution>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>replace</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <basedir>target</basedir>
-                            <includes>
-                                <include>dependency-reduced-pom.xml</include>
-                            </includes>
-                            <replacements>
-                                <replacement>
-                                    <token>@project.version</token>
-                                    <value>${project.version}}</value>
-                                </replacement>
-                            </replacements>
-                        </configuration>
-                    </plugin>
-                    <!-- deploy shaded plugin to remote repository -->
-                    <plugin>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>deploy-shaded-artefact</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>deploy-file</goal>
-                                </goals>
-                                <inherited>false</inherited>
-                                <configuration>
-                                    <repositoryId>ossrh</repositoryId>
-                                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                                    <file>${project.build.directory}/${project.artifactId}-${project.version}-shaded.jar</file>
-                                    <generatePom>false</generatePom>
-                                    <pomFile>dependency-reduced-pom.xml</pomFile>
-                                    <artifactId>${project.artifactId}-no-dependencies</artifactId>
-                                    <groupId>${project.groupId}</groupId>
-                                    <version>${project.version}</version>
-                                    <packaging>${project.packaging}</packaging>
-                                    <sources>${project.build.directory}/${project.artifactId}-${project.version}-sources.jar</sources>
-                                    <javadoc>${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar</javadoc>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
