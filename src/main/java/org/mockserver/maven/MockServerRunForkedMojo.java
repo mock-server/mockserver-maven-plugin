@@ -190,10 +190,9 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
     private String resolvePathForJarWithDependencies() {
         Dependency dependency = new Dependency();
         dependency.setGroupId("org.mock-server");
-        dependency.setArtifactId("mockserver-netty");
+        dependency.setArtifactId("mockserver-netty-no-dependencies");
         dependency.setVersion(getVersion());
         dependency.setType("jar");
-        dependency.setClassifier("shaded");
         return resolvePathForDependencyJar(dependency);
     }
 
@@ -210,7 +209,7 @@ public class MockServerRunForkedMojo extends MockServerAbstractMojo {
         } catch (Exception e) {
             // ignore
         }
-        getLog().info("Using org.mock-server:mockserver-netty:" + version + ":shaded");
+        getLog().info("Using org.mock-server:mockserver-netty-no-dependencies:" + version);
         return version;
     }
 }

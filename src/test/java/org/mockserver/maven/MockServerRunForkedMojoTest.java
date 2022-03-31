@@ -43,7 +43,7 @@ public class MockServerRunForkedMojoTest {
 
         openMocks(this);
 
-        when(mockRepositorySystem.createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "shaded")).thenReturn(mockArtifact);
+        when(mockRepositorySystem.createArtifactWithClassifier("org.mock-server", "mockserver-netty-no-dependencies", mockServerRunForkedMojo.getVersion(), "jar", "")).thenReturn(mockArtifact);
         when(mockServerClient.hasStarted(anyInt(), anyLong(), any(TimeUnit.class))).thenReturn(true);
     }
 
@@ -61,7 +61,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.execute();
 
         // then
-        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "shaded");
+        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty-no-dependencies", mockServerRunForkedMojo.getVersion(), "jar", null);
         verify(mockProcessBuildFactory).create(Arrays.asList(
                 javaBinaryPath,
                 "-Dfile.encoding=UTF-8",
@@ -91,7 +91,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.execute();
 
         // then
-        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "shaded");
+        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty-no-dependencies", mockServerRunForkedMojo.getVersion(), "jar", null);
         verify(mockProcessBuildFactory).create(Arrays.asList(
                 javaBinaryPath,
                 "-Dfile.encoding=UTF-8",
@@ -163,7 +163,7 @@ public class MockServerRunForkedMojoTest {
         mockServerRunForkedMojo.execute();
 
         // then
-        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty", mockServerRunForkedMojo.getVersion(), "jar", "shaded");
+        verify(mockRepositorySystem).createArtifactWithClassifier("org.mock-server", "mockserver-netty-no-dependencies", mockServerRunForkedMojo.getVersion(), "jar", null);
         verify(mockServerClient).hasStarted(anyInt(), anyLong(), any(TimeUnit.class));
         assertFalse(processBuilder.redirectErrorStream());
     }
