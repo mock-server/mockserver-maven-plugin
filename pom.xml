@@ -220,7 +220,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mockserver-integration-testing</artifactId>
-            <version>5.13.1-SNAPSHOT</version>
+            <version>5.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
