@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <mockserver.version>@mockserver.version@</mockserver.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -24,7 +25,7 @@
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-integration-testing</artifactId>
-            <version>@mockserver.version@</version>
+            <version>${mockserver.version}</version>
         </dependency>
     </dependencies>
 
@@ -61,7 +62,7 @@
             <plugin>
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-maven-plugin</artifactId>
-                <version>@mockserver.version@</version>
+                <version>${mockserver.version}</version>
                 <configuration>
                     <logLevel>INFO</logLevel>
                     <serverPort>1086,2086</serverPort>
@@ -71,7 +72,7 @@
                     <dependency>
                         <groupId>org.mock-server</groupId>
                         <artifactId>mockserver-integration-testing</artifactId>
-                        <version>@mockserver.version@</version>
+                        <version>${mockserver.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
